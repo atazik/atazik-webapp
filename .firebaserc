@@ -1,0 +1,20 @@
+{
+  "projects": {},
+  "targets": {
+    "la-maison-atazik-staging": {
+      "hosting": {
+        "staging": [
+          "la-maison-atazik-staging"
+        ]
+      }
+    },
+    "la-maison-atazik": {
+      "hosting": {
+        "production": [
+          "la-maison-atazik"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
