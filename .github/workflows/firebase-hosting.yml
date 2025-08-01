@@ -59,9 +59,7 @@ jobs:
           npm install -g firebase-tools
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${HOME}/firebase.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase.json"
-          firebase projects:list
 
       - name: Deploy to Firebase Hosting
         run: |
-          firebase use ${{ steps.env.outputs.firebase_project }}
           firebase deploy --only hosting --project ${{ steps.env.outputs.firebase_project }}
