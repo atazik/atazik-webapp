@@ -52,14 +52,11 @@ jobs:
       - name: Build Angular App
         run: npm run build -- --configuration ${{ steps.env.outputs.angular_config }}
 
-      - name: Authenticate with Firebase
+      - name: Authenticate and Deploy to Firebase Hosting
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           npm install -g firebase-tools
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${HOME}/firebase.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase.json"
-
-      - name: Deploy to Firebase Hosting
-        run: |
           firebase deploy --only hosting --project ${{ steps.env.outputs.firebase_project }}
