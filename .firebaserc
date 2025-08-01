@@ -1,22 +1,16 @@
 {
-  "projects": {
-  	"default": "la-maison-atazik-staging"
-  },
+  "projects": {},
   "targets": {
     "la-maison-atazik": {
       "hosting": {
+        "staging": [
+          "la-maison-atazik-staging"
+        ],
         "production": [
           "la-maison-atazik"
-        ],
+        ]
       }
     }
-    "la-maison-atazik-staging": {
-			"hosting": {
-				"staging": [
-					"la-maison-atazik-staging"
-				]
-			}
-		}
   },
   "etags": {}
 }
