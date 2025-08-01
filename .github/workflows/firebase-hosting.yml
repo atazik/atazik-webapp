@@ -51,7 +51,7 @@ jobs:
           fi
 
       - name: Build Angular App
-        run: npm run build --configuration ${{ steps.env.outputs.angular_config }}
+        run: npm run build -- --configuration ${{ steps.env.outputs.angular_config }}
 
       - name: Authenticate and Deploy to Firebase Hosting
         env:
