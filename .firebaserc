@@ -7,14 +7,14 @@
   "targets": {
     "la-maison-atazik": {
       "hosting": {
-        "default": [
+        "production": [
           "la-maison-atazik"
         ]
       }
     },
     "la-maison-atazik-staging": {
       "hosting": {
-        "default": [
+        "staging": [
           "la-maison-atazik-staging"
         ]
       }
