@@ -8,11 +8,15 @@
         "production": [
           "la-maison-atazik"
         ],
-        "staging": [
-          "la-maison-atazik-staging"
-        ]
       }
     }
+    "la-maison-atazik-staging": {
+			"hosting": {
+				"staging": [
+					"la-maison-atazik-staging"
+				]
+			}
+		}
   },
   "etags": {}
 }
