@@ -7,6 +7,13 @@
           "la-maison-atazik-staging"
         ]
       }
+    },
+    "la-maison-atazik": {
+      "hosting": {
+        "production": [
+          "la-maison-atazik"
+        ]
+      }
     }
   },
   "etags": {}
