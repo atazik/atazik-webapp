@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "atazik-wepapp": {
+    "atazik-webapp": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -88,10 +88,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "atazik-wepapp:build:production"
+              "buildTarget": "atazik-webapp:build:production"
             },
             "development": {
-              "buildTarget": "atazik-wepapp:build:development"
+              "buildTarget": "atazik-webapp:build:development"
             }
           },
           "defaultConfiguration": "development"
