@@ -1,0 +1,20 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "eur3",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+	"hosting": [
+		{
+			"target": "staging",
+			"public": "dist/atazik-webapp/browser",
+			"ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+		},
+		{
+			"target": "production",
+			"public": "dist/atazik-webapp/browser",
+			"ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+		}
+	]
+}
