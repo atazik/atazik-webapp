@@ -1,0 +1,32 @@
+<div class="sign-in-box">
+	<h1>Se connecter</h1>
+	<form (ngSubmit)="login()" [formGroup]="loginForm">
+		<p-input-group>
+			<p-inputgroup-addon>
+				<i class="pi pi-at"></i>
+			</p-inputgroup-addon>
+
+			<p-floatlabel>
+				<input id="email" pInputText formControlName="email"/>
+				<label for="email">Adresse email</label>
+			</p-floatlabel>
+		</p-input-group>
+
+
+		<p-input-group>
+			<p-inputgroup-addon>
+				<i class="pi pi-lock"></i>
+			</p-inputgroup-addon>
+
+			<p-floatlabel>
+				<p-password inputId="password" formControlName="password" [feedback]="false" toggleMask="true"/>
+				<label for="password">Mot de passe</label>
+			</p-floatlabel>
+		</p-input-group>
+
+		<button pButton type="submit" [disabled]="loginForm.invalid">Connexion</button>
+	</form>
+	@if (error) {
+		<p-message severity="error">{{ error }}</p-message>
+	}
+</div>

@@ -1,0 +1,103 @@
+$font-family-main: 'Arial', sans-serif;
+
+:root {
+	// Color variables
+	--black: #131313;
+	--ligth-black: #1A1A1A;
+	--dark-white: #F1F1F1;
+	--dark-grey: #212121;
+	--ligth-grey: #E0E0E0;
+	--white: #FBFBFB;
+
+	// Font variables
+	--font-family: $font-family-main;
+	--font-size: 16px;
+	--font-weight: 400;
+	--font-weight-bold: 600;
+
+	// Font size variables
+	--font-size-xs: 0.75rem; // 12px
+	--font-size-sm: 0.875rem; // 14px
+	--font-size-md: 1rem; // 16px
+	--font-size-lg: 1.125rem; // 18px
+	--font-size-xl: 1.5rem; // 24px
+
+	// Spacing variables
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 32px;
+	--spacing-xxl: 48px;
+
+	// Border variables
+	--border-radius: 8px;
+	--border-width: 1px;
+	--border-color: var(--ligth-grey);
+	--border-style: solid;
+	--border-color-hover: var(--dark-white);
+	--border-color-focus: var(--dark-white);
+	--border-color-active: var(--dark-white);
+	--border-color-error: var(--dark-white);
+	--border-color-success: var(--dark-white);
+	--border-color-warning: var(--dark-white);
+
+	// Shadow variables
+	--shadow-color: rgba(0, 0, 0, 0.1);
+	--shadow-offset-x: 0;
+	--shadow-offset-y: 2px;
+	--shadow-blur-radius: 4px;
+	--shadow-spread-radius: 0;
+	--shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur-radius) var(--shadow-spread-radius) var(--shadow-color);
+	--shadow-hover: var(--shadow-offset-x) calc(var(--shadow-offset-y) + 2px) var(--shadow-blur-radius) var(--shadow-spread-radius) var(--shadow-color);
+	--shadow-focus: var(--shadow-offset-x) calc(var(--shadow-offset-y) + 4px) var(--shadow-blur-radius) var(--shadow-spread-radius) var(--shadow-color);
+
+	// Transition variables
+	--transition-duration: 0.3s;
+	--transition-timing-function: ease-in-out;
+	--transition: all var(--transition-duration) var(--transition-timing-function);
+	--transition-hover: all calc(var(--transition-duration) * 0.8) var (--transition-timing-function);
+	--transition-focus: all calc(var(--transition-duration) * 0.6) var(--transition-timing-function);
+	--transition-active: all calc(var(--transition-duration) * 0.4) var(--transition-timing-function);
+
+	// Z-index variables
+	--z-index-base: 0;
+	--z-index-dropdown: 1000;
+	--z-index-modal: 2000;
+	--z-index-tooltip: 3000;
+	--z-index-toast: 4000;
+	--z-index-overlay: 5000;
+	--z-index-popover: 6000;
+	--z-index-fixed: 7000;
+	--z-index-sticky: 8000;
+	--z-index-top: 9000;
+	--z-index-modal-backdrop: 10000;
+
+	// Breakpoint variables
+	--breakpoint-xs: 0px; // Extra small devices (phones)
+	--breakpoint-sm: 576px; // Small devices (tablets)
+	--breakpoint-md: 768px; // Medium devices (desktops)
+	--breakpoint-lg: 992px; // Large devices (large desktops)
+	--breakpoint-xl: 1200px; // Extra large devices (large desktops)
+	--breakpoint-xxl: 1400px; // Extra extra large devices (large desktops)
+	--breakpoint-xxxl: 1600px; // Extra extra extra large devices (large desktops)
+
+	// Media query variables
+	--media-xs: (max-width: var(--breakpoint-xs));
+	--media-sm: (max-width: var(--breakpoint-sm));
+	--media-md: (max-width: var(--breakpoint-md));
+	--media-lg: (max-width: var(--breakpoint-lg));
+	--media-xl: (max-width: var(--breakpoint-xl));
+	--media-xxl: (max-width: var(--breakpoint-xxl));
+	--media-xxxl: (max-width: var(--breakpoint-xxxl));
+	--media-print: print;
+	--media-dark: (prefers-color-scheme: dark);
+	--media-light: (prefers-color-scheme: light);
+	--media-hover: (hover: hover);
+	--media-reduced-motion: (prefers-reduced-motion: reduce);
+	--media-hover-none: (hover: none);
+	--media-pointer: (pointer: fine);
+	--media-pointer-coarse: (pointer: coarse);
+	--media-hover-coarse: (hover: coarse);
+	--media-hover-fine: (hover: fine);
+}

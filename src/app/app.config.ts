@@ -8,7 +8,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { customPreset } from './core/themes';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -20,9 +20,24 @@ export const appConfig: ApplicationConfig = {
 		// PrimeNg imports
 		provideAnimationsAsync(),
 		providePrimeNG({
+			translation: {
+				accept: 'Accepter',
+				reject: 'Rejeter',
+				passwordPrompt: 'Entrez votre mot de passe',
+				cancel: 'Annuler',
+				choose: 'Choisir',
+				upload: 'Télécharger',
+				emptyMessage: 'Aucun résultat trouvé',
+				emptyFilterMessage: 'Aucun résultat trouvé',
+				emptySelectionMessage: 'Aucune sélection',
+				emptySearchMessage: 'Aucun résultat trouvé',
+			},
 			ripple: true,
 			theme: {
-				preset: Aura,
+				preset: customPreset,
+				options: {
+					darkModeSelector: true,
+				},
 			},
 		}),
 

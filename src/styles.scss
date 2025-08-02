@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	width: 100%;
+	min-height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 1rem;
+	position: relative;
+
+	iframe {
+		display: none;
+	}
+
+	i, h1, h2, h3, h4, h5, h6, p {
+		caret-color: transparent;
+	}
+}
+
+.p-inputtext:focus {
+	outline: none !important;
+	box-shadow: none !important;
+}
