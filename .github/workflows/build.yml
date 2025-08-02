@@ -1,16 +1,17 @@
-name: Build Check for Develop Branch
+name: Reusable Angular Build
 
 on:
-  push:
-    branches:
-      - develop
-  pull_request:
-    branches:
-      - develop
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      configuration:
+        required: true
+        type: string
+    secrets:
+      FIREBASE_SERVICE_ACCOUNT:
+        required: false
 
 jobs:
-  build-check:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -42,4 +43,10 @@ jobs:
         run: npm run lint
 
       - name: Build Angular App
-        run: npm run build -- --configuration development
+        run: npm run build -- --configuration ${{ inputs.configuration }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/
