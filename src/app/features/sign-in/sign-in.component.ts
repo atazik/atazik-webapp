@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { Password } from 'primeng/password';
 import { ButtonDirective } from 'primeng/button';
@@ -12,6 +11,7 @@ import { InputGroup } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
 import { FirebaseErrorsEnum } from '../../core/enums/firebase-errors.enum';
 import { PASSWORD } from '../../core/constants/regex.constant';
+import { AuthService } from '../../core/services/auth-service';
 
 @Component({
 	selector: 'app-sign-in',
@@ -32,7 +32,7 @@ import { PASSWORD } from '../../core/constants/regex.constant';
 export class SignInComponent {
 	private fb: FormBuilder = inject(FormBuilder);
 	private router = inject(Router);
-	private auth = inject(Auth);
+	private authService = inject(AuthService);
 
 	error = '';
 	loginForm = this.fb.group({
@@ -44,9 +44,11 @@ export class SignInComponent {
 		this.error = '';
 		const { email, password } = this.loginForm.value;
 		try {
-			await signInWithEmailAndPassword(this.auth, email!, password!);
+			await this.authService.signIn(email!, password!);
 			await this.router.navigate(['/']);
-		} catch (err: any) {
+		} catch (err: unknown) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
 			if (err.code === FirebaseErrorsEnum.INVALID_LOGIN_CREDENTIALS) {
 				this.error = 'Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe.';
 			} else {

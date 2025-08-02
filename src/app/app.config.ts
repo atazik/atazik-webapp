@@ -8,7 +8,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import { customPreset } from './core/themes';
+import { customPreset } from './core/constants/themes.constant';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
