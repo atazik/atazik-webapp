@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "ng lint --fix",
+    "pretty-quick": "pretty-quick --staged"
   },
   "prettier": {
     "overrides": [
@@ -28,6 +30,7 @@
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
     "@primeuix/themes": "^1.2.3",
+    "angular-eslint": "^20.1.1",
     "firebase": "^11.10.0",
     "primeng": "^20.0.1",
     "rxjs": "~7.8.0",
@@ -39,12 +42,19 @@
     "@angular/cli": "^20.1.4",
     "@angular/compiler-cli": "^20.1.0",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "20.1.1",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.8.2"
+    "prettier": "^3.6.2",
+    "pretty-quick": "^4.2.2",
+    "typescript": "~5.8.2",
+    "typescript-eslint": "8.34.1"
   }
 }
