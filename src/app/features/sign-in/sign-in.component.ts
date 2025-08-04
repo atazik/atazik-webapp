@@ -11,6 +11,7 @@ import { InputGroupAddon } from 'primeng/inputgroupaddon';
 import { FirebaseErrorsEnum } from '../../core/enums/firebase-errors.enum';
 import { PASSWORD } from '../../core/constants/regex.constant';
 import { Auth, AuthModule, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-sign-in',
@@ -32,6 +33,7 @@ import { Auth, AuthModule, signInWithEmailAndPassword } from '@angular/fire/auth
 export class SignInComponent {
 	private fb: FormBuilder = inject(FormBuilder);
 	private auth = inject(Auth);
+	private router = inject(Router);
 
 	error = '';
 	loginForm = this.fb.group({
@@ -44,6 +46,7 @@ export class SignInComponent {
 		const { email, password } = this.loginForm.value;
 		try {
 			await signInWithEmailAndPassword(this.auth, email!.trim().toLowerCase(), password!);
+			await this.router.navigate(['/']);
 		} catch (err: unknown) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error

@@ -12,6 +12,11 @@ import { customPreset } from './core/constants/themes.constant';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
+		// Angular imports
+		provideBrowserGlobalErrorListeners(),
+		provideZoneChangeDetection({ eventCoalescing: true }),
+		provideRouter(routes),
+
 		// Firebase imports
 		provideFirebaseApp(() => initializeApp(environment.firebase)),
 		provideAuth(() => getAuth()),
@@ -40,10 +45,5 @@ export const appConfig: ApplicationConfig = {
 				},
 			},
 		}),
-
-		// Angular imports
-		provideBrowserGlobalErrorListeners(),
-		provideZoneChangeDetection({ eventCoalescing: true }),
-		provideRouter(routes),
 	],
 };
