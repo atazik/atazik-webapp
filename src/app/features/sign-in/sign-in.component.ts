@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Password } from 'primeng/password';
-import { ButtonDirective } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { FloatLabel } from 'primeng/floatlabel';
@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
 		CommonModule,
 		ReactiveFormsModule,
 		Password,
-		ButtonDirective,
+		ButtonModule,
 		InputText,
 		Message,
 		FloatLabel,

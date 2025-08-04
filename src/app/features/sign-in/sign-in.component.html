@@ -25,7 +25,10 @@
 			</p-floatlabel>
 		</p-input-group>
 
-		<button pButton type="submit" [disabled]="loginForm.invalid" [loading]="isLoading">Connexion</button>
+		<button pButton type="submit" [disabled]="loginForm.invalid" [loading]="isLoading">
+			<i class="pi pi-sign-in" pButtonIcon></i>
+			<span pButtonLabel>Connexion</span>
+		</button>
 	</form>
 	@if (error) {
 		<p-message severity="error">{{ error }}</p-message>

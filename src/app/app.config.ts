@@ -9,11 +9,13 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { customPreset } from './core/constants/themes.constant';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
 		// Angular imports
 		provideBrowserGlobalErrorListeners(),
+		provideAnimations(),
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes),
 
