@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Password } from 'primeng/password';
 import { ButtonDirective } from 'primeng/button';
@@ -11,7 +10,7 @@ import { InputGroup } from 'primeng/inputgroup';
 import { InputGroupAddon } from 'primeng/inputgroupaddon';
 import { FirebaseErrorsEnum } from '../../core/enums/firebase-errors.enum';
 import { PASSWORD } from '../../core/constants/regex.constant';
-import { AuthService } from '../../core/services/auth-service';
+import { Auth, AuthModule, signInWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
 	selector: 'app-sign-in',
@@ -25,14 +24,14 @@ import { AuthService } from '../../core/services/auth-service';
 		FloatLabel,
 		InputGroup,
 		InputGroupAddon,
+		AuthModule,
 	],
 	templateUrl: './sign-in.component.html',
 	styleUrl: './sign-in.component.scss',
 })
 export class SignInComponent {
 	private fb: FormBuilder = inject(FormBuilder);
-	private router = inject(Router);
-	private authService = inject(AuthService);
+	private auth = inject(Auth);
 
 	error = '';
 	loginForm = this.fb.group({
@@ -44,8 +43,7 @@ export class SignInComponent {
 		this.error = '';
 		const { email, password } = this.loginForm.value;
 		try {
-			await this.authService.signIn(email!, password!);
-			await this.router.navigate(['/']);
+			await signInWithEmailAndPassword(this.auth, email!.trim().toLowerCase(), password!);
 		} catch (err: unknown) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
@@ -53,6 +51,7 @@ export class SignInComponent {
 				this.error = 'Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe.';
 			} else {
 				this.error = 'Une erreur est survenue. Veuillez réessayer plus tard.';
+				console.log(err);
 			}
 		}
 	}
