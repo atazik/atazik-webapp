@@ -31,9 +31,9 @@ import { Router } from '@angular/router';
 	styleUrl: './sign-in.component.scss',
 })
 export class SignInComponent {
-	private fb: FormBuilder = inject(FormBuilder);
-	private auth = inject(Auth);
-	private router = inject(Router);
+	private readonly fb: FormBuilder = inject(FormBuilder);
+	private readonly auth = inject(Auth);
+	private readonly router = inject(Router);
 
 	error = '';
 	loginForm = this.fb.group({

@@ -1,0 +1,9 @@
+<header>
+	<h1>Atazik</h1>
+
+	@if (auth.currentUser) {
+		<nav>
+			<a (click)="auth.signOut()" (keydown.enter)="auth.signOut()" href="">Déconnexion</a>
+		</nav>
+	}
+</header>

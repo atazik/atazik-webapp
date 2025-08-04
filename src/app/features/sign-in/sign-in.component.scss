@@ -1,23 +1,32 @@
-.sign-in-box {
-	padding: 2rem;
+:host {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	width: 100%;
-	max-width: 350px;
+	flex: 1;
 
-	h1 {
-		margin-bottom: 2rem;
-	}
+	.sign-in-box {
+		padding: 2rem;
+		width: 100%;
+		max-width: 350px;
 
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
+		h1 {
+			margin-bottom: 2rem;
+		}
 
-		input, p-password {
-			width: 100%;
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5rem;
+
+			input, p-password {
+				width: 100%;
+			}
+		}
+
+		@media (max-width: 400px) {
+			padding: 1rem;
 		}
 	}
 
-	@media (max-width: 400px) {
-		padding: 1rem;
-	}
 }

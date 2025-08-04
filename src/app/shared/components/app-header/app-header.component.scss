@@ -1,0 +1,12 @@
+:host {
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+
+	header {
+		display: flex;
+		padding: 1rem 2rem;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
