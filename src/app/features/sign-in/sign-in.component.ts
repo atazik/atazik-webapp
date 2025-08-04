@@ -34,18 +34,21 @@ export class SignInComponent {
 	private readonly fb: FormBuilder = inject(FormBuilder);
 	private readonly auth = inject(Auth);
 	private readonly router = inject(Router);
+	protected isLoading = false;
 
 	error = '';
 	loginForm = this.fb.group({
-		email: ['', [Validators.required, Validators.email]],
+		username: ['', [Validators.required, Validators.email]],
 		password: ['', [Validators.required, Validators.pattern(PASSWORD)]],
 	});
 
 	async login() {
+		this.isLoading = true;
 		this.error = '';
-		const { email, password } = this.loginForm.value;
+		const { username, password } = this.loginForm.value;
 		try {
-			await signInWithEmailAndPassword(this.auth, email!.trim().toLowerCase(), password!);
+			await signInWithEmailAndPassword(this.auth, username!.trim().toLowerCase(), password!);
+			this.isLoading = false;
 			await this.router.navigate(['/']);
 		} catch (err: unknown) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,6 +59,7 @@ export class SignInComponent {
 				this.error = 'Une erreur est survenue. Veuillez réessayer plus tard.';
 				console.log(err);
 			}
+			this.isLoading = false;
 		}
 	}
 }

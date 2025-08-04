@@ -7,8 +7,8 @@
 			</p-inputgroup-addon>
 
 			<p-floatlabel>
-				<input id="email" pInputText formControlName="email"/>
-				<label for="email">Adresse email</label>
+				<input id="username" pInputText formControlName="username" name="username" required/>
+				<label for="username">Adresse email</label>
 			</p-floatlabel>
 		</p-input-group>
 
@@ -19,12 +19,13 @@
 			</p-inputgroup-addon>
 
 			<p-floatlabel>
-				<p-password inputId="password" formControlName="password" [feedback]="false" toggleMask="true"/>
+				<p-password inputId="password" name="password" formControlName="password" [feedback]="false" toggleMask="true"
+										required/>
 				<label for="password">Mot de passe</label>
 			</p-floatlabel>
 		</p-input-group>
 
-		<button pButton type="submit" [disabled]="loginForm.invalid">Connexion</button>
+		<button pButton type="submit" [disabled]="loginForm.invalid" [loading]="isLoading">Connexion</button>
 	</form>
 	@if (error) {
 		<p-message severity="error">{{ error }}</p-message>

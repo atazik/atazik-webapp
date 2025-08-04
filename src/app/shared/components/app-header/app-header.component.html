@@ -4,6 +4,7 @@
 	@if (auth.currentUser) {
 		<nav>
 			<a (click)="auth.signOut()" (keydown.enter)="auth.signOut()" href="">Déconnexion</a>
+			
 		</nav>
 	}
 </header>
