@@ -11,7 +11,6 @@ html, body {
 	width: 100%;
 	min-height: 100%;
 	position: relative;
-	background-color: atazik.$black;
 
 	iframe {
 		display: none;
@@ -27,9 +26,8 @@ html, body {
 	box-shadow: none !important;
 }
 
-.card {
-	box-shadow: atazik.$shadow;
-	border-radius: atazik.$border-radius;
-	transition: atazik.$transition;
-	background-color: atazik.$light-black;
+.p-card-title {
+	font-size: 2rem !important;
+	font-weight: bold !important;
+	text-align: center;
 }

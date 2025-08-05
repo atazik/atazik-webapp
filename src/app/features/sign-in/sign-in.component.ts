@@ -12,6 +12,7 @@ import { FirebaseErrorsEnum } from '../../core/enums/firebase-errors.enum';
 import { PASSWORD } from '../../core/constants/regex.constant';
 import { Auth, AuthModule, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { Card } from 'primeng/card';
 
 @Component({
 	selector: 'app-sign-in',
@@ -26,6 +27,7 @@ import { Router } from '@angular/router';
 		InputGroup,
 		InputGroupAddon,
 		AuthModule,
+		Card,
 	],
 	templateUrl: './sign-in.component.html',
 	styleUrl: './sign-in.component.scss',

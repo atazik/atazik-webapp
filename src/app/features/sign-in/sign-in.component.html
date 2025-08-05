@@ -1,5 +1,4 @@
-<div class="card sign-in-box">
-	<h1>Se connecter</h1>
+<p-card header="Se connecter">
 	<form (ngSubmit)="login()" [formGroup]="loginForm">
 		<p-input-group>
 			<p-inputgroup-addon>
@@ -33,4 +32,4 @@
 	@if (error) {
 		<p-message severity="error">{{ error }}</p-message>
 	}
-</div>
+</p-card>

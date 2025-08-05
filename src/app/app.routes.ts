@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { SignInComponent } from './features/sign-in/sign-in.component';
 import { AuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { HomeComponent } from './features/home/home.component';
+import { UserManagementComponent } from './features/user-management/user-management.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
 
@@ -14,6 +15,11 @@ export const routes: Routes = [
 			{
 				path: '',
 				component: HomeComponent,
+				pathMatch: 'full',
+			},
+			{
+				path: 'user-management',
+				component: UserManagementComponent,
 			},
 		],
 	},
