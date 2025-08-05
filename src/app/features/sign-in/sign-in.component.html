@@ -1,30 +1,25 @@
 <p-card header="Se connecter">
-	<form (ngSubmit)="login()" [formGroup]="loginForm">
-		<p-input-group>
-			<p-inputgroup-addon>
-				<i class="pi pi-at"></i>
-			</p-inputgroup-addon>
+	<form (ngSubmit)="signIn()" [formGroup]="signInForm">
 
-			<p-floatlabel>
+		<p-floatlabel>
+			<p-iconfield>
+				<p-inputicon class="pi pi-at"/>
 				<input id="username" pInputText formControlName="username" name="username" required/>
-				<label for="username">Adresse email</label>
-			</p-floatlabel>
-		</p-input-group>
+			</p-iconfield>
+			<label for="username">Adresse email</label>
+		</p-floatlabel>
 
 
-		<p-input-group>
-			<p-inputgroup-addon>
-				<i class="pi pi-lock"></i>
-			</p-inputgroup-addon>
-
-			<p-floatlabel>
+		<p-floatlabel>
+			<p-iconfield>
+				<p-inputicon class="pi pi-lock"/>
 				<p-password inputId="password" name="password" formControlName="password" [feedback]="false" toggleMask="true"
 										required/>
-				<label for="password">Mot de passe</label>
-			</p-floatlabel>
-		</p-input-group>
+			</p-iconfield>
+			<label for="password">Mot de passe</label>
+		</p-floatlabel>
 
-		<button pButton type="submit" [disabled]="loginForm.invalid" [loading]="isLoading">
+		<button pButton type="submit" [disabled]="signInForm.invalid" [loading]="isLoading">
 			<i class="pi pi-sign-in" pButtonIcon></i>
 			<span pButtonLabel>Connexion</span>
 		</button>

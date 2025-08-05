@@ -1,31 +1,16 @@
-<div class="p-4">
-	<h2>Firebase Users</h2>
-
-	<p-table [value]="users">
-		<ng-template pTemplate="header">
-			<tr>
-				<th>UID</th>
-				<th>Email</th>
-			</tr>
+<p-card>
+	<p-toolbar aria-label="Actions">
+		<ng-template #center>
+			<p-iconfield iconPosition="left">
+				<p-inputicon class="pi pi-search"/>
+				<input type="text" pInputText placeholder="Search"/>
+			</p-iconfield>
 		</ng-template>
-		<ng-template pTemplate="body" let-user>
-			<tr>
-				<td>{{ user.uid }}</td>
-				<td>{{ user.email }}</td>
-			</tr>
-		</ng-template>
-	</p-table>
 
-	<h3 class="mt-4">Create New User</h3>
-	<form (ngSubmit)="createUser()">
-		<div class="p-field">
-			<label for="username">Email</label>
-			<input pInputText name="username" required id="username"/>
-		</div>
-		<div class="p-field">
-			<label for="password">Password</label>
-			<input pInputText type="password" name="password" required id="password"/>
-		</div>
-		<button pButton type="submit">Create User</button>
-	</form>
-</div>
+		<ng-template #end>
+			<p-button icon="pi pi-plus" class="mr-2" text severity="secondary"/>
+			<p-button icon="pi pi-print" class="mr-2" text severity="secondary"/>
+			<p-button icon="pi pi-upload" text severity="secondary"/>
+		</ng-template>
+	</p-toolbar>
+</p-card>

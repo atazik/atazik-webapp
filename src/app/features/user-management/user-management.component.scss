@@ -1,0 +1,17 @@
+:host {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	flex: 1;
+	padding: 4rem;
+
+	@media (max-width: 768px) {
+		padding: 2rem;
+	}
+
+	p-card {
+		width: 100%;
+		display: flex;
+	}
+}

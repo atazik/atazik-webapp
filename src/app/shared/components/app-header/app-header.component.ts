@@ -29,7 +29,7 @@ export class AppHeaderComponent {
 			accept: () => {
 				this.auth.signOut().then(async () => {
 					this.messageService.add({ severity: 'info', summary: 'Déconnecté', detail: 'Vous êtes déconnecté' });
-					await this.router.navigate(['/login']);
+					await this.router.navigate(['/sign-in']);
 				});
 			},
 		});

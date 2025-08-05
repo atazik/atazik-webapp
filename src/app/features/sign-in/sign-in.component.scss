@@ -5,23 +5,14 @@
 	width: 100%;
 	flex: 1;
 
-	p-card {
-		padding: 0.5rem;
+	p-card form {
+		margin-top: 2rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.75rem;
 
-		form {
-			margin-top: 2rem;
-			display: flex;
-			flex-direction: column;
-			gap: 1.75rem;
-
-			input, p-password {
-				width: 100%;
-			}
-		}
-
-		@media (max-width: 400px) {
-			padding: 1rem;
+		input, p-password {
+			width: 100%;
 		}
 	}
-
 }

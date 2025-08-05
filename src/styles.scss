@@ -19,15 +19,15 @@ html, body {
 	i, h1, h2, h3, h4, h5, h6, p {
 		caret-color: transparent;
 	}
-}
 
-.p-inputtext:focus {
-	outline: none !important;
-	box-shadow: none !important;
-}
+	p-card {
+		padding: 0.5rem;
 
-.p-card-title {
-	font-size: 2rem !important;
-	font-weight: bold !important;
-	text-align: center;
+		.p-card-title {
+			font-size: 2rem !important;
+			font-weight: bold !important;
+			text-align: center;
+		}
+	}
+
 }

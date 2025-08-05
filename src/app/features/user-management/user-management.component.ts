@@ -6,10 +6,25 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { Auth, AuthModule, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { FirebaseUser } from '../../shared/models/firebase-user.model';
+import { Card } from 'primeng/card';
+import { Toolbar } from 'primeng/toolbar';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
 
 @Component({
 	selector: 'app-user-management',
-	imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, AuthModule],
+	imports: [
+		CommonModule,
+		TableModule,
+		ButtonModule,
+		InputTextModule,
+		FormsModule,
+		AuthModule,
+		Card,
+		Toolbar,
+		IconField,
+		InputIcon,
+	],
 	templateUrl: './user-management.component.html',
 	styleUrl: './user-management.component.scss',
 })

@@ -6,13 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { FloatLabel } from 'primeng/floatlabel';
-import { InputGroup } from 'primeng/inputgroup';
-import { InputGroupAddon } from 'primeng/inputgroupaddon';
 import { FirebaseErrorsEnum } from '../../core/enums/firebase-errors.enum';
 import { PASSWORD } from '../../core/constants/regex.constant';
 import { Auth, AuthModule, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Card } from 'primeng/card';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
 
 @Component({
 	selector: 'app-sign-in',
@@ -24,10 +24,10 @@ import { Card } from 'primeng/card';
 		InputText,
 		Message,
 		FloatLabel,
-		InputGroup,
-		InputGroupAddon,
 		AuthModule,
 		Card,
+		IconField,
+		InputIcon,
 	],
 	templateUrl: './sign-in.component.html',
 	styleUrl: './sign-in.component.scss',
@@ -39,15 +39,15 @@ export class SignInComponent {
 	protected isLoading = false;
 
 	error = '';
-	loginForm = this.fb.group({
+	signInForm = this.fb.group({
 		username: ['', [Validators.required, Validators.email]],
 		password: ['', [Validators.required, Validators.pattern(PASSWORD)]],
 	});
 
-	async login() {
+	async signIn() {
 		this.isLoading = true;
 		this.error = '';
-		const { username, password } = this.loginForm.value;
+		const { username, password } = this.signInForm.value;
 		try {
 			await signInWithEmailAndPassword(this.auth, username!.trim().toLowerCase(), password!);
 			this.isLoading = false;
@@ -55,7 +55,7 @@ export class SignInComponent {
 		} catch (err: unknown) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
-			if (err.code === FirebaseErrorsEnum.INVALID_LOGIN_CREDENTIALS) {
+			if (err.code === FirebaseErrorsEnum.INVALID_SIGN_IN_CREDENTIALS) {
 				this.error = 'Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe.';
 			} else {
 				this.error = 'Une erreur est survenue. Veuillez réessayer plus tard.';

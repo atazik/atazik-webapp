@@ -4,26 +4,32 @@ import { AuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { HomeComponent } from './features/home/home.component';
 import { UserManagementComponent } from './features/user-management/user-management.component';
 
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
+const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(['/sign-in']);
 
 export const routes: Routes = [
 	{
 		path: 'app',
 		canActivate: [AuthGuard],
-		data: { authGuardPipe: redirectUnauthorizedToLogin },
+		data: { authGuardPipe: redirectUnauthorizedToSignIn },
 		children: [
 			{
 				path: '',
-				component: HomeComponent,
 				pathMatch: 'full',
+				redirectTo: 'home',
+			},
+			{
+				path: 'home',
+				component: HomeComponent,
+				title: 'Atazik - Accueil',
 			},
 			{
 				path: 'user-management',
 				component: UserManagementComponent,
+				title: 'Atazik - Gestion des utilisateurs',
 			},
 		],
 	},
-	{ path: 'login', component: SignInComponent, title: 'Atazik - Page de connexion' },
-	{ path: '', redirectTo: 'app', pathMatch: 'full' },
-	{ path: '**', redirectTo: 'login' },
+	{ path: 'sign-in', component: SignInComponent, title: 'Atazik - Page de connexion' },
+	{ path: '', redirectTo: 'app/home', pathMatch: 'full' },
+	{ path: '**', redirectTo: 'app/home' },
 ];
