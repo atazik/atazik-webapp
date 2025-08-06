@@ -10,6 +10,7 @@ import { Card } from 'primeng/card';
 import { Toolbar } from 'primeng/toolbar';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
 	selector: 'app-user-management',
@@ -30,6 +31,7 @@ import { InputIcon } from 'primeng/inputicon';
 })
 export class UserManagementComponent implements OnInit {
 	private auth = inject(Auth);
+	private userService = inject(UserService);
 
 	users: FirebaseUser[] = [];
 	newEmail = '';
@@ -42,12 +44,12 @@ export class UserManagementComponent implements OnInit {
 
 	async fetchUsers() {
 		this.loading = true;
-		// Firebase client SDK cannot list users directly.
-		// This would require a Cloud Function or Firebase Admin SDK on server.
-		// For demo, we'll just add currently logged-in user
-		if (this.auth.currentUser) {
-			this.users = [{ uid: this.auth.currentUser.uid, email: this.auth.currentUser.email }];
-		}
+		this.userService
+			.fetchAllUsers()
+			.then((users) => {
+				console.log('Fetched', users.length, 'users:', users);
+			})
+			.catch((err) => console.error('Error fetching users', err));
 
 		this.loading = false;
 	}
@@ -56,7 +58,7 @@ export class UserManagementComponent implements OnInit {
 		try {
 			const userCred = await createUserWithEmailAndPassword(this.auth, this.newEmail, this.newPassword);
 			alert(`User ${userCred.user.email} created!`);
-			this.fetchUsers();
+			await this.fetchUsers();
 		} catch (err: any) {
 			alert(err.message);
 		}
