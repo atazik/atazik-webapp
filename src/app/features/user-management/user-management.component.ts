@@ -34,18 +34,22 @@ export class UserManagementComponent implements OnInit {
 	users: FirebaseUser[] = [];
 	newEmail = '';
 	newPassword = '';
+	loading = false;
 
 	ngOnInit(): void {
 		this.fetchUsers();
 	}
 
 	async fetchUsers() {
+		this.loading = true;
 		// Firebase client SDK cannot list users directly.
 		// This would require a Cloud Function or Firebase Admin SDK on server.
 		// For demo, we'll just add currently logged-in user
 		if (this.auth.currentUser) {
 			this.users = [{ uid: this.auth.currentUser.uid, email: this.auth.currentUser.email }];
 		}
+
+		this.loading = false;
 	}
 
 	async createUser() {
