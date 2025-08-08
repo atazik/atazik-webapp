@@ -2,7 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
@@ -10,6 +10,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import { customPreset } from './core/constants/themes.constant';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
+
+let app: FirebaseApp | undefined;
+const region = 'europe-west9'; // Paris
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -20,9 +24,15 @@ export const appConfig: ApplicationConfig = {
 		provideRouter(routes),
 
 		// Firebase imports
-		provideFirebaseApp(() => initializeApp(environment.firebase)),
+		provideFirebaseApp(() => {
+			if (!app) {
+				app = initializeApp(environment.firebase);
+			}
+			return app;
+		}),
 		provideAuth(() => getAuth()),
 		provideFirestore(() => getFirestore()),
+		provideFunctions(() => getFunctions(app, region)),
 
 		// PrimeNg imports
 		provideAnimationsAsync(),

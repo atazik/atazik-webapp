@@ -1,18 +1,29 @@
-import { Injectable } from '@angular/core';
-import { getFunctions, httpsCallable } from '@angular/fire/functions';
-import { firstValueFrom } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { Functions, FunctionsModule, httpsCallable } from '@angular/fire/functions';
+import { PartialFirebaseUser } from '../models/firebase-user.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: 'root', deps: [FunctionsModule] })
 export class UserService {
-	private functions = getFunctions();
+	private functions = inject(Functions);
 
-	async fetchAllUsers(): Promise<never[]> {
-		const func = httpsCallable(this.functions, 'getAllUsers');
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-expect-error
-		const result = await firstValueFrom(func({}));
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-expect-error
-		return result.data; // array of user JSON objects
+	async fetchAllUsers(): Promise<PartialFirebaseUser[]> {
+		let result: PartialFirebaseUser[] = [];
+		const getAllUsers = httpsCallable(this.functions, 'getAllUsers');
+		await getAllUsers()
+			.then((response) => {
+				console.log(response);
+				if (response.data && Array.isArray(response.data)) {
+					result = response.data.map((user) => {
+						return user as PartialFirebaseUser;
+					});
+				}
+			})
+			.catch((error) => {
+				console.error('Error fetching users:', error);
+				throw new Error('Failed to fetch users');
+			});
+
+		console.log(result);
+		return result;
 	}
 }

@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Card } from 'primeng/card';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import { Ripple } from 'primeng/ripple';
 
 @Component({
 	selector: 'app-sign-in',
@@ -28,6 +29,7 @@ import { InputIcon } from 'primeng/inputicon';
 		Card,
 		IconField,
 		InputIcon,
+		Ripple,
 	],
 	templateUrl: './sign-in.component.html',
 	styleUrl: './sign-in.component.scss',

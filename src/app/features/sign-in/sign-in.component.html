@@ -19,7 +19,7 @@
 			<label for="password">Mot de passe</label>
 		</p-floatlabel>
 
-		<p-button icon="pi pi-sign-in" type="submit" label="Connexion" [disabled]="signInForm.invalid"
+		<p-button pRipple icon="pi pi-sign-in" type="submit" label="Connexion" [disabled]="signInForm.invalid"
 							[loading]="isLoading"/>
 	</form>
 	@if (error) {

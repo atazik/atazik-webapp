@@ -5,12 +5,14 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { Auth, AuthModule, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { FirebaseUser } from '../../shared/models/firebase-user.model';
+import { FirebaseUser, PartialFirebaseUser } from '../../core/models/firebase-user.model';
 import { Card } from 'primeng/card';
 import { Toolbar } from 'primeng/toolbar';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { UserService } from '../../core/services/user.service';
+import { Ripple } from 'primeng/ripple';
+import { mapFirebaseUsersToRows } from '../../core/mappers/firebase-user-to-row.mapper';
 
 @Component({
 	selector: 'app-user-management',
@@ -25,6 +27,7 @@ import { UserService } from '../../core/services/user.service';
 		Toolbar,
 		IconField,
 		InputIcon,
+		Ripple,
 	],
 	templateUrl: './user-management.component.html',
 	styleUrl: './user-management.component.scss',
@@ -33,7 +36,8 @@ export class UserManagementComponent implements OnInit {
 	private auth = inject(Auth);
 	private userService = inject(UserService);
 
-	users: FirebaseUser[] = [];
+	private users: PartialFirebaseUser[] = [];
+	protected userRows: FirebaseUser[] = [];
 	newEmail = '';
 	newPassword = '';
 	loading = false;
@@ -44,13 +48,16 @@ export class UserManagementComponent implements OnInit {
 
 	async fetchUsers() {
 		this.loading = true;
-		this.userService
+		await this.userService
 			.fetchAllUsers()
 			.then((users) => {
-				console.log('Fetched', users.length, 'users:', users);
+				this.users = users;
 			})
-			.catch((err) => console.error('Error fetching users', err));
-
+			.catch((error) => {
+				console.error('Error fetching users:', error);
+				alert('Failed to fetch users. Please try again later.');
+			});
+		this.userRows = mapFirebaseUsersToRows(this.users);
 		this.loading = false;
 	}
 
