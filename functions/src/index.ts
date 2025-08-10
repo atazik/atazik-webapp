@@ -10,29 +10,30 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
-import { defineString } from "firebase-functions/params";
+import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
 
 // Add env variables for email configuration
-const emailUser = defineString("EMAIL_USER");
-const emailPass = defineString("EMAIL_PASS");
-const emailHost = defineString("EMAIL_HOST");
-
 const emailSignUpLink = defineString("EMAIL_SIGNUP_LINK");
+const emailUser = defineString("EMAIL_USER");
+const emailHost = defineString("EMAIL_HOST");
+const emailPort = defineString("EMAIL_PORT");
+const emailPass = defineSecret("EMAIL_PASS"); // secret for email password
 
 // Configuration for nodemailer
-const transporter = nodemailer.createTransport({
-	service: emailHost.value(),
-	port: 465,
-	secure: true,
-	auth: {
-		user: emailUser.value(),
-		pass: emailPass.value(),
-	},
-});
+const transporter = (pass: string) =>
+	nodemailer.createTransport({
+		service: emailHost.value(),
+		port: Number.parseInt(emailPort.value()),
+		secure: true,
+		auth: {
+			user: emailUser.value(),
+			pass: pass,
+		},
+	});
 
 /**
  * Recursively lists all users in Firebase Authentication.
@@ -97,6 +98,12 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
 		.catch((error) => {
 			console.error("Error deleting pending invite:", error);
 		});
+
+	// Update user auth version in Firestore
+	const docRef = admin.firestore().doc("admin/global");
+	docRef.update({ userAuthVersion: admin.firestore.FieldValue.increment(1) }).catch((error) => {
+		console.error("Error updating user auth version:", error);
+	});
 	return authEvent.data;
 });
 
@@ -106,7 +113,7 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
  * to invite another user by sending an email with a sign-in link.
  * The invited user can then create an account.
  */
-export const inviteUserByEmail = functions.https.onCall(async (request, response) => {
+export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }, async (request, response) => {
 	if (!request.auth || !request.auth.token.role || request.auth.token.role !== "admin") {
 		throw new functions.https.HttpsError(
 			"unauthenticated",
@@ -141,7 +148,7 @@ export const inviteUserByEmail = functions.https.onCall(async (request, response
 		const link = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
 
 		// Envoyer l'e-mail à l'utilisateur
-		await transporter.sendMail({
+		await transporter(emailPass.value()).sendMail({
 			from: emailUser.value(),
 			to: email,
 			subject: "Invitation à rejoindre La Maison Atazik",

@@ -54,40 +54,6 @@ p-password {
 	}
 }
 
-// Hide bug caret in input fields with icons
-p-iconfield,
-p-inputicon,
-p-toolbar,
-p-toolbar > * {
-	caret-color: transparent; /* Hide caret */
-	user-select: none; /* Optional: prevent selection */
-}
-
-p-iconfield:focus,
-p-inputicon:focus {
-	outline: none; /* No focus outline */
-}
-
-
-p-iconfield,
-p-inputicon {
-	pointer-events: none; /* The wrapper won’t be focusable */
-}
-
-p-iconfield input,
-p-inputicon input {
-	pointer-events: auto; /* But the actual input works */
-}
-
-
-*:not(input):not(textarea) {
-	caret-color: transparent;
-}
-
-input, textarea {
-	caret-color: white;
-}
-
 .p-datatable-header {
 	padding-inline: 0 !important;
 }
