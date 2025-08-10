@@ -26,7 +26,7 @@ const emailPass = defineSecret("EMAIL_PASS"); // secret for email password
 // Configuration for nodemailer
 const transporter = (pass: string) =>
 	nodemailer.createTransport({
-		service: emailHost.value(),
+		host: emailHost.value(),
 		port: Number.parseInt(emailPort.value()),
 		secure: true,
 		auth: {

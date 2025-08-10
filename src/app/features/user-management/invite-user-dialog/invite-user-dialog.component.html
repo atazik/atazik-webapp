@@ -21,7 +21,8 @@
 				<p-message severity="error" closable>{{ error }}</p-message>
 			}
 			<p-button icon="pi pi-times" label="Annuler" severity="secondary" (click)="onClose()"/>
-			<p-button icon="pi pi-check" type="submit" label="Inviter" [disabled]="formInviteUser.invalid"/>
+			<p-button icon="pi pi-check" type="submit" label="Inviter" [disabled]="formInviteUser.invalid"
+								[loading]="loading"/>
 		</div>
 	</form>
 

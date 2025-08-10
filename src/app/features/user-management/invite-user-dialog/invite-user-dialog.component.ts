@@ -40,13 +40,14 @@ export class InviteUserDialogComponent {
 			this.formInviteUser.markAllAsTouched();
 			return;
 		}
+		this.error = "";
 
 		const email = this.formInviteUser.get("email")?.value?.toLowerCase().trim();
 		const role = this.formInviteUser.get("role")?.value;
 
 		this.loading = true;
 		try {
-			await this.userService.inviteUserByEmail({ email: email!, role: role! });
+			await this.userService.inviteUserByEmail({ email: email!, intendedRole: role! });
 			this.formInviteUser.reset();
 			this.confirm.emit();
 			this.onClose();
