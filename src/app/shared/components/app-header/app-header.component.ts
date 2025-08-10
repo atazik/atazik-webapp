@@ -19,6 +19,8 @@ export class AppHeaderComponent {
 	protected messageService = inject(MessageService);
 	private router = inject(Router);
 
+	protected isSignUpUrl = this.router.url.includes("finish-signup");
+
 	confirmSignOut() {
 		this.confirmationService.confirm({
 			message: "Êtes-vous sûr de vouloir vous déconnecter ?",

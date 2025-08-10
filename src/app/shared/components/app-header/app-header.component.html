@@ -4,7 +4,7 @@
 <header>
 	<h1>Atazik</h1>
 
-	@if (auth.currentUser) {
+	@if (auth.currentUser && !isSignUpUrl) {
 		<nav>
 			<a routerLink="/app" routerLinkActive="active-link" aria-label="Accueil">
 				<span>Accueil</span>
