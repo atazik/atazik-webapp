@@ -1,5 +1,5 @@
 export interface UserInvite {
 	email: string;
-	intendedRole?: string;
+	role?: string;
 	createdAt?: Date;
 }

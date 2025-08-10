@@ -31,7 +31,7 @@ export function mapFirebaseUsersToRows(user: PartialFirebaseUser[]): FirebaseUse
 }
 
 export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
-	const { email, intendedRole } = invite;
+	const { email, role } = invite;
 	return {
 		displayName: "Invitation en attente",
 		email: email || "Aucun e-mail défini",
@@ -41,9 +41,9 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 			class: "bg-blue-500 text-white",
 		},
 		roleChip: {
-			label: getRoleLabel(intendedRole),
-			icon: intendedRole === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: intendedRole === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+			label: getRoleLabel(role),
+			icon: role === "admin" ? "pi pi-shield" : "pi pi-user",
+			class: role === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
 		},
 	};
 }

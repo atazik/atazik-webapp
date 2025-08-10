@@ -47,7 +47,7 @@ export class InviteUserDialogComponent {
 
 		this.loading = true;
 		try {
-			await this.userService.inviteUserByEmail({ email: email!, intendedRole: role! });
+			await this.userService.inviteUserByEmail({ email: email!, role: role! });
 			this.formInviteUser.reset();
 			this.confirm.emit();
 			this.onClose();

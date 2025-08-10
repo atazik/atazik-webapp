@@ -138,14 +138,14 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 		// Enregistrer l'invitation en attente dans Firestore
 		await admin.firestore().collection(collectionName).doc(email).set({
 			email: email,
-			intendedRole: role,
+			role: role,
 			status: "invited",
 			createdAt: admin.firestore.FieldValue.serverTimestamp(),
 		});
 
 		// Générer le lien de connexion/création d'e-mail
 		const actionCodeSettings: ActionCodeSettings = {
-			url: emailSignUpLink.value().replace("{email}", encodeURIComponent(email)),
+			url: emailSignUpLink.value(),
 			// Ceci doit être vrai pour les liens de connexion
 			handleCodeInApp: true,
 		};

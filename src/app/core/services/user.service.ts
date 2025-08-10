@@ -17,7 +17,7 @@ export class UserService {
 	 * @param userInvite The UserInvite object containing the email and role of the user to invite.
 	 */
 	async inviteUserByEmail(userInvite: UserInvite): Promise<void> {
-		if (!userInvite.email || !userInvite.intendedRole) {
+		if (!userInvite.email || !userInvite.role) {
 			throw new Error("Email and intended role are required to invite a user.");
 		}
 
