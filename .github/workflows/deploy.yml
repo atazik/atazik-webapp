@@ -43,5 +43,7 @@ jobs:
           npm install -g firebase-tools
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${HOME}/firebase.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase.json"
+          firebase target:apply hosting staging la-maison-atazik-staging
+          firebase target:apply hosting production la-maison-atazik
           firebase deploy --only hosting:${{ steps.env.outputs.env }} --project ${{ steps.env.outputs.firebase_project }}
           firebase deploy --only functions --project ${{ steps.env.outputs.firebase_project }}
