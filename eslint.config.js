@@ -49,8 +49,5 @@ module.exports = tseslint.config(
 			...angular.configs.templateAccessibility,
 			prettierConfig, // for HTML formatting consistency
 		],
-		rules: {
-			"prettier/prettier": "error",
-		},
 	},
 );

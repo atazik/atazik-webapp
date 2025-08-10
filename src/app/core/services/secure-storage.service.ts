@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { SecureStorageData } from "../models/secure-storage-data.model";
 
 @Injectable({ providedIn: "root" })
 export class SecureStorageService {
@@ -27,7 +28,7 @@ export class SecureStorageService {
 		);
 	}
 
-	private async encryptData(data: any): Promise<string> {
+	private async encryptData(data: unknown): Promise<string> {
 		const iv = crypto.getRandomValues(new Uint8Array(12));
 		const key = await this.getKey();
 		const encoded = new TextEncoder().encode(JSON.stringify(data));
@@ -39,9 +40,7 @@ export class SecureStorageService {
 		return `${ivBase64}:${cipherBase64}`;
 	}
 
-	/**
-	 */
-	private async decryptData(cipherText: string): Promise<any> {
+	private async decryptData(cipherText: string): Promise<unknown> {
 		const [ivBase64, cipherBase64] = cipherText.split(":");
 		const iv = new Uint8Array(
 			atob(ivBase64)
@@ -77,7 +76,7 @@ export class SecureStorageService {
 		const encrypted = localStorage.getItem(key);
 		if (!encrypted) return null;
 		try {
-			const item = await this.decryptData(encrypted);
+			const item = (await this.decryptData(encrypted)) as SecureStorageData<T>;
 			if (Date.now() > item.expiresAt) {
 				localStorage.removeItem(key);
 				return null;
