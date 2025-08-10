@@ -1,56 +1,69 @@
-<h2>
-	Gestion des utilisateurs
-</h2>
+<div>
+	<h2>
+		<i class="title-icon pi pi-users"></i>
+		Gestion des utilisateurs
+	</h2>
+	<p class="page-description">
+		Cette page vous permet de gérer les utilisateurs de votre application. Vous pouvez inviter de nouveaux utilisateurs,
+		modifier leurs rôles et gérer l'état de leurs comptes.
+	</p>
+</div>
 
 <p-card>
-	<p-toolbar aria-label="Actions">
-		<ng-template #start>
-			<p-button icon="pi pi-refresh" class="mr-2" text severity="secondary"/>
-		</ng-template>
-
-		<ng-template #end>
-			<p-button pRipple icon="pi pi-plus" label="Ajouter un utilisateur"/>
-		</ng-template>
-	</p-toolbar>
-
 	<p-table
 		#dt2
-		[value]="users"
+		[value]="userRows"
 		[scrollable]="true"
 		[loading]="loading"
-		[globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+		[globalFilterFields]="['displayName', 'email', 'uid']"
 	>
 		<ng-template #caption>
-			<div class="flex">
-				<p-iconfield iconPosition="left" class="ml-auto">
-					<p-inputicon class="pi pi-search"/>
-					<input pInputText type="text" (input)="dt2.filterGlobal($event.target!.value, 'contains')"
-								 placeholder="Rechercher un utilisateur"/>
-				</p-iconfield>
-			</div>
+			<p-toolbar aria-label="Actions">
+				<ng-template #start class="half-width">
+					<p-iconfield class="research-bar">
+						<p-inputicon class="pi pi-search"/>
+						<input pInputText type="text" (input)="dt2.filterGlobal($event.target!.value, 'contains')"
+									 placeholder="Rechercher un nom, un e-mail ou un rôle"/>
+					</p-iconfield>
+				</ng-template>
+
+				<ng-template #end>
+					<p-button icon="pi pi-refresh" class="margin-2" text severity="secondary"/>
+					<p-button pRipple icon="pi pi-plus" label="Inviter un utilisateur"/>
+				</ng-template>
+			</p-toolbar>
 		</ng-template>
 
 		<ng-template #header>
 			<tr>
 				<th>Nom</th>
-				<th>Adresse e-mail</th>
-				<th>État du compte</th>
+				<th>Status du compte</th>
 				<th>Rôle</th>
 				<th></th>
 			</tr>
 		</ng-template>
 		<ng-template #body let-user>
 			<tr>
-				<td>{{ user.uid }}</td>
-				<td>{{ user.displayName }}</td>
-				<td>{{ user.email }}</td>
-				<td>{{ user.uid }}</td>
+				<td>
+					<div class="name-table-container">
+						<span class="display-name-text">{{ user.displayName }}</span>
+						<span class="email-text">{{ user.email }}</span>
+					</div>
+				</td>
+				<td>
+					<p-chip [label]="user.statusChip.label" [icon]="user.statusChip.icon" [removable]="user.statusChip.removable"
+									class="{{ user.statusChip.class }}"/>
+				</td>
+				<td>
+					<p-chip [label]="user.role" class="role-chip"/>
+				</td>
+				<td></td>
 			</tr>
 		</ng-template>
 
 		<ng-template #emptymessage>
 			<tr>
-				<td colspan="8">Aucun utilisateur trouvé.</td>
+				<td colspan="8" class="empty-table-msg">Aucun utilisateur trouvé.<br>Une erreur s'est produite.</td>
 			</tr>
 		</ng-template>
 	</p-table>

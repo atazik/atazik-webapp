@@ -7,13 +7,31 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import { getAuth, UserRecord } from 'firebase-admin/auth';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
+import { defineString } from "firebase-functions/params";
+import nodemailer from "nodemailer";
 
 admin.initializeApp();
+functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
 
-functions.setGlobalOptions({ maxInstances: 5, region: 'europe-west9' });
+// Add env variables for email configuration
+const emailUser = defineString("EMAIL_USER");
+const emailPass = defineString("EMAIL_PASS");
+
+const emailSignUpLink = defineString("EMAIL_SIGNUP_LINK");
+
+// Configuration for nodemailer
+const transporter = nodemailer.createTransport({
+	host: "smtp.gmail.com",
+	port: 465,
+	secure: true,
+	auth: {
+		user: emailUser.value(),
+		pass: emailPass.value(),
+	},
+});
 
 /**
  * Recursively lists all users in Firebase Authentication.
@@ -37,7 +55,7 @@ async function listAllUsers(nextPageToken?: string) {
  * This function is callable via HTTPS and returns a list of user records.
  * Each user record includes basic information such as uid, email, displayName, etc.
  */
-export const getAllUsers = functions.https.onCall(async (data, context) => {
+export const getAllUsers = functions.https.onCall(async (request, response) => {
 	const userRecords = await listAllUsers();
 	return userRecords.map((u) => {
 		return {
@@ -50,4 +68,92 @@ export const getAllUsers = functions.https.onCall(async (data, context) => {
 			customClaims: u.customClaims || {},
 		};
 	});
+});
+
+/**
+ * Cloud Function to add default claims to a user when they are created.
+ * This function is triggered before a user is created in Firebase Authentication.
+ * It sets the default role and status for the user.
+ */
+export const addDefaultClaimsOnCreate = functions.identity.beforeUserCreated((authEvent) => {
+	const user = authEvent.data;
+	if (!user) {
+		throw new functions.https.HttpsError("invalid-argument", "No use found in auth event data");
+	}
+
+	if (!user.customClaims) {
+		user.customClaims = {};
+	}
+	user.customClaims.role = "user";
+	user.customClaims.status = "activated";
+	return authEvent.data;
+});
+
+/**
+ * Cloud Function to invite a user by email.
+ * This function is callable via HTTPS and allows an authenticated user (an admin)
+ * to invite another user by sending an email with a sign-in link.
+ * The invited user can then create an account.
+ */
+export const inviteUserByEmail = functions.https.onCall(async (request, response) => {
+	if (!request.auth || !request.auth.token.role || request.auth.token.role !== "admin") {
+		throw new functions.https.HttpsError(
+			"unauthenticated",
+			"Seuls les utilisateurs authentifiés et administrateurs peuvent inviter.",
+		);
+	}
+
+	const { email, role } = request.data;
+
+	if (!email || !role) {
+		throw new functions.https.HttpsError("invalid-argument", "L'e-mail et le rôle sont requis.");
+	}
+
+	const collectionName = "pendingInvites";
+
+	try {
+		// Enregistrer l'invitation en attente dans Firestore
+		await admin.firestore().collection(collectionName).doc(email).set({
+			email: email,
+			intendedRole: role,
+			status: "invited",
+			createdAt: admin.firestore.FieldValue.serverTimestamp(),
+		});
+
+		// Générer le lien de connexion/création d'e-mail
+		const actionCodeSettings: ActionCodeSettings = {
+			url: emailSignUpLink.value().replace("{email}", encodeURIComponent(email)),
+			// Ceci doit être vrai pour les liens de connexion
+			handleCodeInApp: true,
+		};
+
+		const link = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+
+		// Envoyer l'e-mail à l'utilisateur
+		await transporter.sendMail({
+			from: emailUser.value(),
+			to: email,
+			subject: "Invitation à rejoindre La Maison Atazik",
+			html: `
+        <p>Bonjour,</p>
+        <p>Vous avez été invité à créer un compte sur La Maison Atazik avec le rôle "${role}".</p>
+        <p>Cliquez sur le lien ci-dessous pour finaliser la création de votre compte :</p>
+        <p><a href="${link}">Finaliser l'inscription</a></p>
+        <p>Ce lien expirera dans un certain temps. Ne le partagez pas.</p>
+        <p>Cordialement,</p>
+        <p>L'équipe La Maison Atazik</p>
+      `,
+		});
+
+		return { success: true, message: "Invitation envoyée avec succès." };
+	} catch (error) {
+		console.error("Erreur lors de l'invitation de l'utilisateur:", error);
+		if (error instanceof functions.https.HttpsError) {
+			throw error; // Re-jeter l'erreur HttpsError
+		}
+		throw new functions.https.HttpsError(
+			"internal",
+			"Une erreur inattendue est survenue lors de l'envoi de l'invitation.",
+		);
+	}
 });

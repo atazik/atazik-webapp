@@ -1,7 +1,8 @@
+import { PrimeChipProperties } from "../prime-chip-properties.model";
+
 export interface FirebaseUserRow {
-	uid: string;
-	email?: string;
-	emailVerified: boolean;
-	lastName?: string;
-	firstName?: string;
+	displayName: string;
+	email: string;
+	statusChip: PrimeChipProperties;
+	role: string;
 }

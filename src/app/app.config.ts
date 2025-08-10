@@ -1,19 +1,19 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from "@angular/core";
+import { provideRouter } from "@angular/router";
 
-import { routes } from './app.routes';
-import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { environment } from '../environments/environment';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
-import { customPreset } from './core/constants/themes.constant';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { routes } from "./app.routes";
+import { FirebaseApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { environment } from "../environments/environment";
+import { getAuth, provideAuth } from "@angular/fire/auth";
+import { getFirestore, provideFirestore } from "@angular/fire/firestore";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { providePrimeNG } from "primeng/config";
+import { customPreset } from "./core/constants/themes.constant";
+import { provideAnimations } from "@angular/platform-browser/animations";
+import { getFunctions, provideFunctions } from "@angular/fire/functions";
 
 let app: FirebaseApp | undefined;
-const region = 'europe-west9'; // Paris
+const region = "europe-west9"; // Paris
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -38,16 +38,16 @@ export const appConfig: ApplicationConfig = {
 		provideAnimationsAsync(),
 		providePrimeNG({
 			translation: {
-				accept: 'Accepter',
-				reject: 'Rejeter',
-				passwordPrompt: 'Entrez votre mot de passe',
-				cancel: 'Annuler',
-				choose: 'Choisir',
-				upload: 'Télécharger',
-				emptyMessage: 'Aucun résultat trouvé',
-				emptyFilterMessage: 'Aucun résultat trouvé',
-				emptySelectionMessage: 'Aucune sélection',
-				emptySearchMessage: 'Aucun résultat trouvé',
+				accept: "Accepter",
+				reject: "Rejeter",
+				passwordPrompt: "Entrez votre mot de passe",
+				cancel: "Annuler",
+				choose: "Choisir",
+				upload: "Télécharger",
+				emptyMessage: "Aucun résultat trouvé",
+				emptyFilterMessage: "Aucun résultat trouvé",
+				emptySelectionMessage: "Aucune sélection",
+				emptySearchMessage: "Aucun résultat trouvé",
 			},
 			ripple: true,
 			theme: {

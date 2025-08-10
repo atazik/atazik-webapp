@@ -8,11 +8,55 @@
 		padding: 2rem;
 	}
 
+	h2 {
+		margin-bottom: 1rem;
+	}
+
+	.page-description {
+		max-width: 40rem;
+	}
+
 	p-card {
 		width: 100%;
 		flex: 1;
 
 		display: flex;
 		flex-direction: column;
+
+		.research-bar {
+			width: 100%;
+
+			input {
+				width: 100%;
+			}
+		}
+
+		.name-table-container {
+			display: flex;
+			flex-direction: column;
+			gap: 0.2rem;
+
+			.display-name-text {
+				font-weight: 600;
+				font-size: 1.2rem;
+			}
+
+			.email-text {
+				font-size: 0.9rem;
+			}
+		}
+
+		tr {
+			height: 5rem;
+		}
+
+		.empty-table-msg {
+			text-align: center;
+			padding-block: 2rem;
+		}
 	}
+}
+
+.margin-2 {
+	margin-right: 1rem;
 }

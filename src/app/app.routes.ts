@@ -1,35 +1,35 @@
-import { Routes } from '@angular/router';
-import { SignInComponent } from './features/sign-in/sign-in.component';
-import { AuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
-import { HomeComponent } from './features/home/home.component';
-import { UserManagementComponent } from './features/user-management/user-management.component';
+import { Routes } from "@angular/router";
+import { SignInComponent } from "./features/sign-in/sign-in.component";
+import { AuthGuard, redirectUnauthorizedTo } from "@angular/fire/auth-guard";
+import { HomeComponent } from "./core/services/home/home.component";
+import { UserManagementComponent } from "./features/user-management/user-management.component";
 
-const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(['/sign-in']);
+const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(["/sign-in"]);
 
 export const routes: Routes = [
 	{
-		path: 'app',
+		path: "app",
 		canActivate: [AuthGuard],
 		data: { authGuardPipe: redirectUnauthorizedToSignIn },
 		children: [
 			{
-				path: '',
-				pathMatch: 'full',
-				redirectTo: 'home',
+				path: "",
+				pathMatch: "full",
+				redirectTo: "home",
 			},
 			{
-				path: 'home',
+				path: "home",
 				component: HomeComponent,
-				title: 'Atazik - Accueil',
+				title: "Atazik - Accueil",
 			},
 			{
-				path: 'user-management',
+				path: "user-management",
 				component: UserManagementComponent,
-				title: 'Atazik - Gestion des utilisateurs',
+				title: "Atazik - Gestion des utilisateurs",
 			},
 		],
 	},
-	{ path: 'sign-in', component: SignInComponent, title: 'Atazik - Page de connexion' },
-	{ path: '', redirectTo: 'app/home', pathMatch: 'full' },
-	{ path: '**', redirectTo: 'app/home' },
+	{ path: "sign-in", component: SignInComponent, title: "Atazik - Page de connexion" },
+	{ path: "", redirectTo: "app/home", pathMatch: "full" },
+	{ path: "**", redirectTo: "app/home" },
 ];
