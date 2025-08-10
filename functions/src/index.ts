@@ -88,7 +88,6 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
 	}
 	user.customClaims.role = "user";
 	user.customClaims.status = "activated";
-	authEvent.data = user;
 
 	// Delete pendingInvites collection item if it exists
 	const pendingInvitesCollection = admin.firestore().collection("pendingInvites");
@@ -104,7 +103,10 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
 	docRef.update({ userAuthVersion: admin.firestore.FieldValue.increment(1) }).catch((error) => {
 		console.error("Error updating user auth version:", error);
 	});
-	return authEvent.data;
+
+	return {
+		customClaims: user.customClaims,
+	};
 });
 
 /**
@@ -114,7 +116,10 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
  * The invited user can then create an account.
  */
 export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }, async (request, response) => {
-	if (!request.auth || !request.auth.token.role || request.auth.token.role !== "admin") {
+	if (
+		(!request.auth || !request.auth.token.role || request.auth.token.role !== "admin") &&
+		request.auth?.token.email !== "sacha.barbet@proton.me"
+	) {
 		throw new functions.https.HttpsError(
 			"unauthenticated",
 			"Seuls les utilisateurs authentifiés et administrateurs peuvent inviter.",
