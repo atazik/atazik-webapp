@@ -1,0 +1,58 @@
+.flex {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flex-auto {
+	flex: 1;
+}
+
+.justify-center {
+	justify-content: center;
+}
+
+.font-semibold {
+	font-weight: 600;
+}
+
+.w-24 {
+	width: 4rem;
+}
+
+.justify-end {
+	justify-content: flex-end;
+}
+
+.items-center {
+	align-items: center;
+}
+
+.gap-2 {
+	gap: 0.5rem;
+}
+
+.gap-4 {
+	gap: 1rem;
+}
+
+.mb-8 {
+	margin-bottom: 2rem;
+}
+
+.mb-4 {
+	margin-bottom: 1rem;
+}
+
+.block {
+	display: block;
+}
+
+p {
+	font-size: 1rem;
+	margin-bottom: 1rem;
+	max-width: 450px;
+}
+
+i {
+	margin-right: .25rem;
+}

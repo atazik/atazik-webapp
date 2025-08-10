@@ -44,3 +44,4 @@ jobs:
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${HOME}/firebase.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase.json"
           firebase deploy --only hosting:${{ steps.env.outputs.env }} --project ${{ steps.env.outputs.firebase_project }}
+          firebase deploy --only functions --project ${{ steps.env.outputs.firebase_project }}

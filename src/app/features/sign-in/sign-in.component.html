@@ -1,32 +1,28 @@
-<div class="sign-in-box">
-	<h1>Se connecter</h1>
-	<form (ngSubmit)="login()" [formGroup]="loginForm">
-		<p-input-group>
-			<p-inputgroup-addon>
-				<i class="pi pi-at"></i>
-			</p-inputgroup-addon>
-
-			<p-floatlabel>
-				<input id="email" pInputText formControlName="email"/>
-				<label for="email">Adresse email</label>
-			</p-floatlabel>
-		</p-input-group>
+<p-card header="Se connecter">
+	<p-divider/>
+	<form (ngSubmit)="signIn()" [formGroup]="signInForm">
+		<p-floatlabel>
+			<p-iconfield>
+				<p-inputicon class="pi pi-at"/>
+				<input id="username" pInputText formControlName="username" name="username" required/>
+			</p-iconfield>
+			<label for="username">Adresse email</label>
+		</p-floatlabel>
 
 
-		<p-input-group>
-			<p-inputgroup-addon>
-				<i class="pi pi-lock"></i>
-			</p-inputgroup-addon>
+		<p-floatlabel>
+			<p-iconfield>
+				<p-inputicon class="pi pi-lock"/>
+				<p-password inputId="password" name="password" formControlName="password" [feedback]="false" toggleMask="true"
+										required/>
+			</p-iconfield>
+			<label for="password">Mot de passe</label>
+		</p-floatlabel>
 
-			<p-floatlabel>
-				<p-password inputId="password" formControlName="password" [feedback]="false" toggleMask="true"/>
-				<label for="password">Mot de passe</label>
-			</p-floatlabel>
-		</p-input-group>
-
-		<button pButton type="submit" [disabled]="loginForm.invalid">Connexion</button>
+		<p-button pRipple icon="pi pi-sign-in" type="submit" label="Connexion" [disabled]="signInForm.invalid"
+							[loading]="isLoading"/>
 	</form>
 	@if (error) {
 		<p-message severity="error">{{ error }}</p-message>
 	}
-</div>
+</p-card>

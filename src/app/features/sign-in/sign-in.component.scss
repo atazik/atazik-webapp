@@ -1,25 +1,23 @@
-.sign-in-box {
-	background: #111;
-	padding: 2rem;
-	border-radius: var(--border-radius-sm);
-	width: 100%;
-	max-width: 350px;
+@use "mixins" as *;
 
-	h1 {
-		margin-bottom: 2rem;
-	}
+:host {
+	@include container();
 
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
+	justify-content: center;
+	align-items: center;
 
-		input, p-password {
-			width: 100%;
+	p-card {
+		min-width: 350px;
+
+		form {
+			margin-top: 2rem;
+			display: flex;
+			flex-direction: column;
+			gap: 1.75rem;
+
+			input, p-password, p-button {
+				width: 100%;
+			}
 		}
-	}
-
-	@media (max-width: 400px) {
-		padding: 1rem;
 	}
 }

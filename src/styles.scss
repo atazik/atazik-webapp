@@ -1,30 +1,82 @@
+@use "variables" as *;
 @import "primeicons/primeicons.css";
 
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+	font-family: "Nunito Sans", sans-serif;
 }
 
 html, body {
 	width: 100%;
 	min-height: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 1rem;
 	position: relative;
 
 	iframe {
 		display: none;
 	}
 
-	i, h1, h2, h3, h4, h5, h6, p {
-		caret-color: transparent;
+	p-card {
+		padding: 0.5rem;
+
+		.p-card-title {
+			font-size: 2rem !important;
+			font-weight: bold !important;
+			text-align: center;
+		}
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: 600;
+		font-family: "JetBrains Mono", sans-serif;
+		color: $white;
+	}
+
+	p {
+		font-size: 1rem;
+		color: $white;
+	}
+
+}
+
+p-button button {
+	width: 100%;
+}
+
+p-password {
+	input {
+		width: 100%;
+	}
+
+	svg {
+		cursor: pointer;
 	}
 }
 
-.p-inputtext:focus {
-	outline: none !important;
-	box-shadow: none !important;
+.p-datatable-header {
+	padding-inline: 0 !important;
+}
+
+.full-width {
+	width: 100%;
+}
+
+.p-toolbar-start,
+.half-width {
+	width: 50% !important;
+}
+
+.title-icon {
+	font-size: 1.5rem !important;
+}
+
+.dialog-width {
+	min-width: 40vw !important;
+	width: auto;
+	max-width: 80vw !important;
+}
+
+.text-secondary {
+	color: $dark-white;
 }
