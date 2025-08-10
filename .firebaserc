@@ -4,46 +4,16 @@
     "production": "la-maison-atazik"
   },
   "targets": {
-    "la-maison-atazik": {
-      "hosting": {
-        "staging": [
-          "la-maison-atazik-staging"
-        ],
-        "production": [
-          "la-maison-atazik"
-        ]
-      }
-    },
     "la-maison-atazik-staging": {
       "hosting": {
-        "production": [
-          "la-maison-atazik"
-        ],
-        "staging": [
-          "la-maison-atazik-staging"
-        ]
+        "staging": ["la-maison-atazik-staging"]
+      }
+    },
+    "la-maison-atazik": {
+      "hosting": {
+        "production": ["la-maison-atazik"]
       }
     }
-    "production": {
-          "hosting": {
-            "staging": [
-              "la-maison-atazik-staging"
-            ],
-            "production": [
-              "la-maison-atazik"
-            ]
-          }
-        },
-		"staging": {
-			"hosting": {
-				"production": [
-					"la-maison-atazik"
-				],
-				"staging": [
-					"la-maison-atazik-staging"
-				]
-			}
-		}
   },
   "etags": {}
 }
