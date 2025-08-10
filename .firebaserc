@@ -24,6 +24,26 @@
         ]
       }
     }
+    "production": {
+          "hosting": {
+            "staging": [
+              "la-maison-atazik-staging"
+            ],
+            "production": [
+              "la-maison-atazik"
+            ]
+          }
+        },
+		"staging": {
+			"hosting": {
+				"production": [
+					"la-maison-atazik"
+				],
+				"staging": [
+					"la-maison-atazik-staging"
+				]
+			}
+		}
   },
   "etags": {}
 }
