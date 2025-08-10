@@ -15,7 +15,7 @@
 		[value]="userRows"
 		[scrollable]="true"
 		[loading]="loading"
-		[globalFilterFields]="['displayName', 'email', 'uid']"
+		[globalFilterFields]="['displayName', 'email', 'roleChip.label', 'statusChip.label']"
 	>
 		<ng-template #caption>
 			<p-toolbar aria-label="Actions">
@@ -28,8 +28,8 @@
 				</ng-template>
 
 				<ng-template #end>
-					<p-button icon="pi pi-refresh" class="margin-2" text severity="secondary"/>
-					<p-button pRipple icon="pi pi-plus" label="Inviter un utilisateur"/>
+					<p-button icon="pi pi-refresh" class="margin-2" text severity="secondary" (click)="fetchUsers()"/>
+					<p-button pRipple icon="pi pi-plus" label="Inviter un utilisateur" (click)="openInviteDialog()"/>
 				</ng-template>
 			</p-toolbar>
 		</ng-template>
@@ -39,7 +39,7 @@
 				<th>Nom</th>
 				<th>Status du compte</th>
 				<th>Rôle</th>
-				<th></th>
+				<th class="action-header-cell"></th>
 			</tr>
 		</ng-template>
 		<ng-template #body let-user>
@@ -55,7 +55,8 @@
 									class="{{ user.statusChip.class }}"/>
 				</td>
 				<td>
-					<p-chip [label]="user.role" class="role-chip"/>
+					<p-chip [label]="user.roleChip.label" [icon]="user.roleChip.icon" [removable]="user.roleChip.removable"
+									class="role-chip {{ user.roleChip.class }}"/>
 				</td>
 				<td></td>
 			</tr>
@@ -68,3 +69,6 @@
 		</ng-template>
 	</p-table>
 </p-card>
+
+<app-invite-user-dialog [visible]="inviteDialogVisible" (visibleChange)="inviteDialogVisible = $event"
+												(confirm)="confirmInviteDialog()"/>

@@ -16,6 +16,7 @@ import { mapFirebaseUsersToRows, mapUserInvitesToRows } from "../../core/mappers
 import { FirebaseUserRow } from "../../core/models/tables-row/firebase-user-row.model";
 import { Chip } from "primeng/chip";
 import { UserInvite } from "../../core/models/user-invite.model";
+import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dialog.component";
 
 @Component({
 	selector: "app-user-management",
@@ -32,6 +33,7 @@ import { UserInvite } from "../../core/models/user-invite.model";
 		InputIcon,
 		Ripple,
 		Chip,
+		InviteUserDialogComponent,
 	],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
@@ -43,6 +45,8 @@ export class UserManagementComponent implements OnInit {
 	private usersInvites: UserInvite[] = [];
 	protected userRows: FirebaseUserRow[] = [];
 	protected loading = false;
+
+	protected inviteDialogVisible = false;
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -78,5 +82,19 @@ export class UserManagementComponent implements OnInit {
 		this.userRows = mapFirebaseUsersToRows(this.usersFirebase);
 		this.userRows.push(...mapUserInvitesToRows(this.usersInvites));
 		this.loading = false;
+	}
+
+	/**
+	 * Opens the invite dialog.
+	 */
+	openInviteDialog() {
+		this.inviteDialogVisible = true;
+	}
+
+	/**
+	 * Closes the invite dialog.
+	 */
+	confirmInviteDialog() {
+		this.fetchUsers();
 	}
 }

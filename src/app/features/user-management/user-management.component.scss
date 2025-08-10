@@ -48,6 +48,14 @@
 
 		tr {
 			height: 5rem;
+
+			th {
+				width: 28%;
+
+				&.action-header-cell {
+					width: 16%;
+				}
+			}
 		}
 
 		.empty-table-msg {

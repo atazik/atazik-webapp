@@ -1,0 +1,28 @@
+<p-dialog (onHide)="onClose()" header="Inviter un utilisateur" [modal]="true" [(visible)]="visible"
+					class="dialog-width">
+	<p class="text-secondary">
+		<i class="pi pi-info-circle"></i>
+		Un e-mail d'invitation sera envoyé à l'utilisateur, il pourra alors créer son compte et se connecter à
+		l'application.
+	</p>
+	<form [formGroup]="formInviteUser" (ngSubmit)="onSubmit()">
+		<div class="flex items-center gap-4 mb-4">
+			<label for="email" class="font-semibold w-24">E-mail</label>
+			<input pInputText placeholder="E-mail du nouvel utilisateur" id="email" formControlName="email" class="flex-auto"
+						 autocomplete="off" required/>
+		</div>
+		<div class="flex items-center gap-4 mb-8">
+			<label for="role" class="font-semibold w-24">Rôle</label>
+			<p-select inputId="role" placeholder="Choisir un rôle" formControlName="role" [options]="roles"
+								optionLabel="label" class="flex-auto" optionValue="value" required/>
+		</div>
+		<div class="flex justify-end items-center gap-2">
+			@if (error) {
+				<p-message severity="error" closable>{{ error }}</p-message>
+			}
+			<p-button icon="pi pi-times" label="Annuler" severity="secondary" (click)="onClose()"/>
+			<p-button icon="pi pi-check" type="submit" label="Inviter" [disabled]="formInviteUser.invalid"/>
+		</div>
+	</form>
+
+</p-dialog>
