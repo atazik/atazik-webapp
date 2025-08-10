@@ -14,6 +14,7 @@ import { Card } from "primeng/card";
 import { IconField } from "primeng/iconfield";
 import { InputIcon } from "primeng/inputicon";
 import { Ripple } from "primeng/ripple";
+import { Divider } from "primeng/divider";
 
 @Component({
 	selector: "app-sign-in",
@@ -30,6 +31,7 @@ import { Ripple } from "primeng/ripple";
 		IconField,
 		InputIcon,
 		Ripple,
+		Divider,
 	],
 	templateUrl: "./sign-in.component.html",
 	styleUrl: "./sign-in.component.scss",

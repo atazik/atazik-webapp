@@ -30,6 +30,12 @@ html, body {
 	h1, h2, h3, h4, h5, h6 {
 		font-weight: 600;
 		font-family: "JetBrains Mono", sans-serif;
+		color: $white;
+	}
+
+	p {
+		font-size: 1rem;
+		color: $white;
 	}
 
 }
@@ -97,4 +103,14 @@ input, textarea {
 
 .title-icon {
 	font-size: 1.5rem !important;
+}
+
+.dialog-width {
+	min-width: 40vw !important;
+	width: auto;
+	max-width: 80vw !important;
+}
+
+.text-secondary {
+	color: $dark-white;
 }

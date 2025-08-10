@@ -4,5 +4,5 @@ export interface FirebaseUserRow {
 	displayName: string;
 	email: string;
 	statusChip: PrimeChipProperties;
-	role: string;
+	roleChip: PrimeChipProperties;
 }

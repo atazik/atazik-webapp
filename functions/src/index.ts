@@ -19,12 +19,13 @@ functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
 // Add env variables for email configuration
 const emailUser = defineString("EMAIL_USER");
 const emailPass = defineString("EMAIL_PASS");
+const emailHost = defineString("EMAIL_HOST");
 
 const emailSignUpLink = defineString("EMAIL_SIGNUP_LINK");
 
 // Configuration for nodemailer
 const transporter = nodemailer.createTransport({
-	host: "smtp.gmail.com",
+	service: emailHost.value(),
 	port: 465,
 	secure: true,
 	auth: {
@@ -75,7 +76,7 @@ export const getAllUsers = functions.https.onCall(async (request, response) => {
  * This function is triggered before a user is created in Firebase Authentication.
  * It sets the default role and status for the user.
  */
-export const addDefaultClaimsOnCreate = functions.identity.beforeUserCreated((authEvent) => {
+export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEvent) => {
 	const user = authEvent.data;
 	if (!user) {
 		throw new functions.https.HttpsError("invalid-argument", "No use found in auth event data");
@@ -86,6 +87,16 @@ export const addDefaultClaimsOnCreate = functions.identity.beforeUserCreated((au
 	}
 	user.customClaims.role = "user";
 	user.customClaims.status = "activated";
+	authEvent.data = user;
+
+	// Delete pendingInvites collection item if it exists
+	const pendingInvitesCollection = admin.firestore().collection("pendingInvites");
+	pendingInvitesCollection
+		.doc(user.email?.toLowerCase().trim() || "")
+		.delete()
+		.catch((error) => {
+			console.error("Error deleting pending invite:", error);
+		});
 	return authEvent.data;
 });
 

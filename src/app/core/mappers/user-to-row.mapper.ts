@@ -10,7 +10,7 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 		displayName: displayName || "Aucun nom défini",
 		email: email || "Aucun e-mail défini",
 		statusChip: {
-			label: statusActivated ? "Actif" : !emailVerified ? "E-mail non vérifié" : "Inconnu",
+			label: getStatusLabel(customClaims?.["status"], emailVerified),
 			icon: statusActivated ? "pi pi-check" : "pi pi-times",
 			class: statusActivated
 				? "bg-green-500 text-white"
@@ -18,7 +18,11 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 					? "bg-yellow-500 text-white"
 					: "bg-gray-500 text-white",
 		},
-		role: getRoleLabel(customClaims?.["role"]),
+		roleChip: {
+			label: getRoleLabel(customClaims?.["role"]),
+			icon: customClaims?.["role"] === "admin" ? "pi pi-shield" : "pi pi-user",
+			class: customClaims?.["role"] === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+		},
 	};
 }
 
@@ -36,12 +40,30 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 			icon: "pi pi-clock",
 			class: "bg-blue-500 text-white",
 		},
-		role: getRoleLabel(role),
+		roleChip: {
+			label: getRoleLabel(role),
+			icon: role === "admin" ? "pi pi-shield" : "pi pi-user",
+			class: role === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+		},
 	};
 }
 
 export function mapUserInvitesToRows(invites: UserInvite[]): FirebaseUserRow[] {
 	return invites.map(mapUserInviteToRow);
+}
+
+function getStatusLabel(status?: string, emailVerified?: boolean): string {
+	if (!status) {
+		return "Inconnu";
+	}
+
+	if (status === "activated") {
+		return emailVerified ? "Activé" : "E-mail non vérifié";
+	} else if (status === "invited") {
+		return "Invité";
+	} else {
+		return "Inconnu";
+	}
 }
 
 function getRoleLabel(role?: string): string {

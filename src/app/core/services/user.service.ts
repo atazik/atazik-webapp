@@ -12,6 +12,23 @@ export class UserService {
 	private secureStorageService = inject(SecureStorageService);
 
 	/**
+	 * Invites a user by email and role.
+	 * This method creates a new user invite in Firebase Firestore.
+	 * @param userInvite The UserInvite object containing the email and role of the user to invite.
+	 */
+	async inviteUserByEmail(userInvite: UserInvite): Promise<void> {
+		if (!userInvite.email || !userInvite.role) {
+			throw new Error("Email and intended role are required to invite a user.");
+		}
+
+		const inviteUserFunction = httpsCallable(this.functions, "inviteUserByEmail");
+		await inviteUserFunction(userInvite).catch((error) => {
+			console.error("Error inviting user:", error);
+			throw new Error("Failed to invite user");
+		});
+	}
+
+	/**
 	 * Fetches invites from Firebase Firestore.
 	 */
 	async fetchInvites(): Promise<UserInvite[]> {
