@@ -22,6 +22,7 @@ const emailUser = defineString("EMAIL_USER");
 const emailHost = defineString("EMAIL_HOST");
 const emailPort = defineString("EMAIL_PORT");
 const emailPass = defineSecret("EMAIL_PASS"); // secret for email password
+const appName = defineString("APP_NAME");
 
 // Configuration for nodemailer
 const transporter = (pass: string) =>
@@ -156,15 +157,15 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 		await transporter(emailPass.value()).sendMail({
 			from: emailUser.value(),
 			to: email,
-			subject: "Invitation à rejoindre La Maison Atazik",
+			subject: `Invitation à rejoindre ${appName.value()}`,
 			html: `
         <p>Bonjour,</p>
-        <p>Vous avez été invité à créer un compte sur La Maison Atazik avec le rôle "${role}".</p>
+        <p>Vous avez été invité à créer un compte sur ${appName.value()} avec le rôle "${role}".</p>
         <p>Cliquez sur le lien ci-dessous pour finaliser la création de votre compte :</p>
         <p><a href="${link}">Finaliser l'inscription</a></p>
         <p>Ce lien expirera dans un certain temps. Ne le partagez pas.</p>
         <p>Cordialement,</p>
-        <p>L'équipe La Maison Atazik</p>
+        <p>L'équipe ${appName.value()}</p>
       `,
 		});
 
@@ -174,6 +175,7 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 		if (error instanceof functions.https.HttpsError) {
 			throw error; // Re-jeter l'erreur HttpsError
 		}
+
 		throw new functions.https.HttpsError(
 			"internal",
 			"Une erreur inattendue est survenue lors de l'envoi de l'invitation.",
