@@ -5,7 +5,7 @@ import {
 	isSignInWithEmailLink,
 	signInWithEmailLink,
 	updatePassword,
-	updateProfile
+	updateProfile,
 } from "@angular/fire/auth";
 import { CardModule } from "primeng/card";
 import { DividerModule } from "primeng/divider";
