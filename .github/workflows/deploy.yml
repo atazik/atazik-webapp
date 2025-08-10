@@ -3,39 +3,27 @@ name: Deploy Angular App to Firebase Hosting
 on:
   push:
     branches:
-      - main      # Production
-      - staging   # Staging
+      - main
+      - staging
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      configuration: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
 
-    strategy:
-      matrix:
-        node-version: [20]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: npm ci
+          name: angular-dist
+          path: dist/
 
       - name: Determine Environment
         id: env
@@ -43,15 +31,10 @@ jobs:
           if [[ "${GITHUB_REF##*/}" == "main" ]]; then
             echo "env=production" >> $GITHUB_OUTPUT
             echo "firebase_project=la-maison-atazik" >> $GITHUB_OUTPUT
-            echo "angular_config=production" >> $GITHUB_OUTPUT
           elif [[ "${GITHUB_REF##*/}" == "staging" ]]; then
             echo "env=staging" >> $GITHUB_OUTPUT
             echo "firebase_project=la-maison-atazik-staging" >> $GITHUB_OUTPUT
-            echo "angular_config=staging" >> $GITHUB_OUTPUT
           fi
-
-      - name: Build Angular App
-        run: npm run build -- --configuration ${{ steps.env.outputs.angular_config }}
 
       - name: Authenticate and Deploy to Firebase Hosting
         env:
@@ -61,3 +44,4 @@ jobs:
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${HOME}/firebase.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase.json"
           firebase deploy --only hosting:${{ steps.env.outputs.env }} --project ${{ steps.env.outputs.firebase_project }}
+          firebase deploy --only functions --project ${{ steps.env.outputs.firebase_project }}

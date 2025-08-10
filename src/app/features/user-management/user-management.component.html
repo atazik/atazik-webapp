@@ -1,0 +1,74 @@
+<div>
+	<h2>
+		<i class="title-icon pi pi-users"></i>
+		Gestion des utilisateurs
+	</h2>
+	<p class="page-description">
+		Cette page vous permet de gérer les utilisateurs de votre application. Vous pouvez inviter de nouveaux utilisateurs,
+		modifier leurs rôles et gérer l'état de leurs comptes.
+	</p>
+</div>
+
+<p-card>
+	<p-table
+		#dt2
+		[value]="userRows"
+		[scrollable]="true"
+		[loading]="loading"
+		[globalFilterFields]="['displayName', 'email', 'roleChip.label', 'statusChip.label']"
+	>
+		<ng-template #caption>
+			<p-toolbar aria-label="Actions">
+				<ng-template #start class="half-width">
+					<p-iconfield class="research-bar">
+						<p-inputicon class="pi pi-search"/>
+						<input pInputText type="text" (input)="dt2.filterGlobal($event.target!.value, 'contains')"
+									 placeholder="Rechercher un nom, un e-mail, un status ou un rôle"/>
+					</p-iconfield>
+				</ng-template>
+
+				<ng-template #end>
+					<p-button icon="pi pi-refresh" class="margin-2" text severity="secondary" (click)="fetchUsers()"/>
+					<p-button pRipple icon="pi pi-plus" label="Inviter un utilisateur" (click)="openInviteDialog()"/>
+				</ng-template>
+			</p-toolbar>
+		</ng-template>
+
+		<ng-template #header>
+			<tr>
+				<th>Nom</th>
+				<th>Status du compte</th>
+				<th>Rôle</th>
+				<th class="action-header-cell"></th>
+			</tr>
+		</ng-template>
+		<ng-template #body let-user>
+			<tr>
+				<td>
+					<div class="name-table-container">
+						<span class="display-name-text">{{ user.displayName }}</span>
+						<span class="email-text">{{ user.email }}</span>
+					</div>
+				</td>
+				<td>
+					<p-chip [label]="user.statusChip.label" [icon]="user.statusChip.icon" [removable]="user.statusChip.removable"
+									class="{{ user.statusChip.class }}"/>
+				</td>
+				<td>
+					<p-chip [label]="user.roleChip.label" [icon]="user.roleChip.icon" [removable]="user.roleChip.removable"
+									class="role-chip {{ user.roleChip.class }}"/>
+				</td>
+				<td></td>
+			</tr>
+		</ng-template>
+
+		<ng-template #emptymessage>
+			<tr>
+				<td colspan="8" class="empty-table-msg">Aucun utilisateur trouvé.<br>Une erreur s'est produite.</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</p-card>
+
+<app-invite-user-dialog [visible]="inviteDialogVisible" (visibleChange)="inviteDialogVisible = $event"
+												(confirm)="confirmInviteDialog()"/>

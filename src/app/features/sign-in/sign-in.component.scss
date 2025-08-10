@@ -1,0 +1,23 @@
+@use "mixins" as *;
+
+:host {
+	@include container();
+
+	justify-content: center;
+	align-items: center;
+
+	p-card {
+		min-width: 350px;
+
+		form {
+			margin-top: 2rem;
+			display: flex;
+			flex-direction: column;
+			gap: 1.75rem;
+
+			input, p-password, p-button {
+				width: 100%;
+			}
+		}
+	}
+}

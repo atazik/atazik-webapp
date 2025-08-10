@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "la-maison-atazik-staging"
+  },
   "targets": {
     "la-maison-atazik-staging": {
       "hosting": {

@@ -1,0 +1,21 @@
+<p-toast/>
+<p-confirmDialog></p-confirmDialog>
+
+<header>
+	<h1>Atazik</h1>
+
+	@if (auth.currentUser && !isSignUpUrl) {
+		<nav>
+			<a routerLink="/app" routerLinkActive="active-link" aria-label="Accueil">
+				<span>Accueil</span>
+			</a>
+			<a routerLink="/app/user-management" routerLinkActive="active-link" aria-label="Gestion des utilisateurs">
+				<span>Gestion des utilisateurs</span>
+			</a>
+		</nav>
+		<p-button link type="button" (click)="confirmSignOut()" (keydown.enter)="confirmSignOut()">
+			<i class="pi pi-sign-out" pButtonIcon></i>
+			<span pButtonLabel>Déconnexion</span>
+		</p-button>
+	}
+</header>

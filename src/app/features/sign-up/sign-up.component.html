@@ -1,0 +1,30 @@
+<p-card>
+	@if (isSignInWithEmailLink) {
+		<p-divider/>
+		<form (ngSubmit)="onSubmit()" [formGroup]="formSignUp">
+			<p-floatlabel>
+				<p-iconfield>
+					<p-inputicon class="pi pi-at"/>
+					<input id="email" pInputText formControlName="email" name="email" required/>
+				</p-iconfield>
+				<label for="email">Adresse email</label>
+			</p-floatlabel>
+
+			<p-floatlabel>
+				<p-iconfield>
+					<p-inputicon class="pi pi-lock"/>
+					<p-password inputId="password" name="password" formControlName="password" [feedback]="false"
+											toggleMask="true" required/>
+				</p-iconfield>
+				<label for="password">Mot de passe</label>
+			</p-floatlabel>
+
+			<p-button pRipple icon="pi pi-user-plus" type="submit" label="S'inscrire"
+								[disabled]="formSignUp.invalid" [loading]="loading"/>
+		</form>
+		@if (error) {
+			<p-message severity="error">{{ error }}</p-message>
+		}
+	}
+</p-card>
+

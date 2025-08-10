@@ -1,0 +1,44 @@
+@use 'variables' as *;
+
+:host {
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+	width: 100%;
+
+	header {
+		display: flex;
+		padding: 1rem 4rem;
+		align-items: center;
+		justify-content: space-between;
+		gap: 4rem;
+
+		nav {
+			display: flex;
+			align-items: center;
+			gap: 1.5rem; // 24px
+			flex: 1;
+
+			a {
+				font-size: 1.125rem; // 18px
+				line-height: 1.5rem;
+				color: $light-grey;
+				text-decoration: none;
+				transition: color 0.3s ease-in-out;
+				border-bottom: 1px #121212 solid;
+
+				&:hover {
+					color: var(--p-primary-color);
+				}
+
+				&.active-link {
+					border-bottom: 1px $light-grey solid;
+				}
+
+				&.active-link:hover {
+					border-bottom: 1px var(--p-primary-color) solid;
+				}
+			}
+		}
+	}
+}
