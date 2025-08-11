@@ -4,6 +4,7 @@ import { AuthGuard, redirectUnauthorizedTo } from "@angular/fire/auth-guard";
 import { HomeComponent } from "./core/services/home/home.component";
 import { UserManagementComponent } from "./features/user-management/user-management.component";
 import { SignUpComponent } from "./features/sign-up/sign-up.component";
+import { signUpGuardGuard } from "./core/guards/sign-up-guard-guard";
 
 const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(["/sign-in"]);
 
@@ -35,7 +36,7 @@ export const routes: Routes = [
 		path: "finish-signup",
 		component: SignUpComponent,
 		title: "Atazik - Inscription",
-		canActivate: [AuthGuard],
+		canActivate: [signUpGuardGuard],
 		data: { authGuardPipe: redirectUnauthorizedToSignIn },
 	},
 	{ path: "", redirectTo: "app/home", pathMatch: "full" },

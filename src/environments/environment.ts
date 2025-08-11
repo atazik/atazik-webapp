@@ -8,4 +8,5 @@ export const environment = {
 		messagingSenderId: "489145409139",
 		appId: "1:489145409139:web:75583f8f659c3cff771406",
 	},
+	urlSignUp: "https://la-maison-atazik-staging.web.app/finish-signup",
 };

@@ -9,4 +9,5 @@ export const environment = {
 		appId: "1:903753012667:web:7e343c27cd04d315b4209e",
 		production: true,
 	},
+	urlSignUp: "https://la-maison-atazik.web.app/finish-signup",
 };
