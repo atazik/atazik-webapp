@@ -1,44 +1,56 @@
 {
-  "firestore": {
-    "database": "(default)",
-    "location": "europe-west9",
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "hosting": [
-    {
-      "target": "staging",
-      "public": "dist/atazik-webapp/browser",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    },
-    {
-      "target": "production",
-      "public": "dist/atazik-webapp/browser",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    }
-  ],
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
-    }
-  ]
+	"firestore": {
+		"database": "(default)",
+		"location": "europe-west9",
+		"rules": "firestore.rules",
+		"indexes": "firestore.indexes.json"
+	},
+	"hosting": [
+		{
+			"target": "staging",
+			"public": "dist/atazik-webapp/browser",
+			"ignore": [
+				"firebase.json",
+				"**/.*",
+				"**/node_modules/**"
+			],
+			"rewrites": [
+				{
+					"source": "**",
+					"destination": "/index.html"
+				}
+			]
+		},
+		{
+			"target": "production",
+			"public": "dist/atazik-webapp/browser",
+			"ignore": [
+				"firebase.json",
+				"**/.*",
+				"**/node_modules/**"
+			],
+			"rewrites": [
+				{
+					"source": "**",
+					"destination": "/index.html"
+				}
+			]
+		}
+	],
+	"functions": [
+		{
+			"source": "functions",
+			"codebase": "default",
+			"ignore": [
+				"node_modules",
+				".git",
+				"firebase-debug.log",
+				"firebase-debug.*.log",
+				"*.local"
+			],
+			"predeploy": [
+				"npm --prefix \"$RESOURCE_DIR\" run build"
+			]
+		}
+	]
 }
