@@ -35,8 +35,6 @@ export const routes: Routes = [
 		path: "finish-signup",
 		component: SignUpComponent,
 		title: "Atazik - Inscription",
-		canActivate: [AuthGuard],
-		data: { authGuardPipe: redirectUnauthorizedToSignIn },
 	},
 	{ path: "", redirectTo: "app/home", pathMatch: "full" },
 	{ path: "**", redirectTo: "app/home" },
