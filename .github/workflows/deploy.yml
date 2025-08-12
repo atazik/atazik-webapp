@@ -41,17 +41,13 @@ jobs:
             exit 0 # Exit successfully if no deployment is needed for this branch
           fi
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          node-version: '20'
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
       - name: Install Firebase Tools
         run: npm install -g firebase-tools
-
-      - name: Authenticate Firebase CLI
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${HOME}/gcp-key.json
 
       - name: Deploy to Firebase Hosting and Functions
         env:
