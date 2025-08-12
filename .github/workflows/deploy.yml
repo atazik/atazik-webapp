@@ -52,7 +52,8 @@ jobs:
       - name: Authenticate Firebase CLI
         run: |
           echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${HOME}/gcp-key.json
-          export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/gcp-key.json"
 
       - name: Deploy to Firebase Hosting and Functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: "${HOME}/gcp-key.json"
         run: firebase deploy --only hosting,functions --project ${{ steps.firebase_project_id.outputs.project_id }}
