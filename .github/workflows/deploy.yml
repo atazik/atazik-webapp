@@ -33,9 +33,9 @@ jobs:
         run: |
           # We use github.ref to precisely determine the branch.
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "id=la-maison-atazik" >> $GITHUB_OUTPUT # Production project ID
+            echo "project_id=la-maison-atazik" >> $GITHUB_OUTPUT # Production project ID
           elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            echo "id=la-maison-atazik-staging" >> $GITHUB_OUTPUT # Staging project ID
+            echo "project_id=la-maison-atazik-staging" >> $GITHUB_OUTPUT # Staging project ID
           else
             echo "No matching branch for deployment, skipping."
             exit 0 # Exit successfully if no deployment is needed for this branch
@@ -51,11 +51,9 @@ jobs:
 
       - name: Authenticate Firebase CLI
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > "${HOME}/gcp-key.json"
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcp-key.json" >> $GITHUB_ENV
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud config set project ${{ steps.firebase_project_id.outputs.project_id }}
 
       - name: Deploy to Firebase Hosting and Functions
         run: firebase deploy --only hosting,functions --project ${{ steps.firebase_project_id.outputs.id }}
-
