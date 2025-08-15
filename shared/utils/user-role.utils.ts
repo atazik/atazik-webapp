@@ -1,23 +1,13 @@
-/**
- * Enum representing different user roles in the application.
- * This enum is used to define the roles that users can have,
- * which can be used for access control and permissions.
- */
-export enum UserRoleEnum {
-	ADMIN = "admin",
-	PRESIDENT = "president",
-	MEMBER = "member",
-	USER = "user",
-}
+import { UserRoleEnum } from "../enums/user-roles.enum";
 
-// TODO Move in services ?
 export function getUserRoleLabel(role?: string): string {
-	console.log("getUserRoleLabel", role);
 	switch (role) {
 		case UserRoleEnum.ADMIN:
 			return "Administrateur";
 		case UserRoleEnum.PRESIDENT:
 			return "Président";
+		case UserRoleEnum.RESPONSABLE:
+			return "Responsable";
 		case UserRoleEnum.MEMBER:
 			return "Membre";
 		case UserRoleEnum.USER:
@@ -27,17 +17,15 @@ export function getUserRoleLabel(role?: string): string {
 	}
 }
 
-// TODO Move in services ?
-export function listBelowUserRoles(role: UserRoleEnum): UserRoleEnum[] {
+export function listBelowOrEqualUserRoles(role: UserRoleEnum): UserRoleEnum[] {
 	const roles = Object.values(UserRoleEnum);
-	const index = roles.indexOf(role);
-	if (index === -1) {
+	const roleIndex = roles.indexOf(role);
+	if (roleIndex === -1) {
 		return [];
 	}
-	return roles.slice(index + 1);
+	return roles.slice(0, roleIndex + 1);
 }
 
-// TODO Move in services ?
 export function isUserRoleEqualOrBelow(role: UserRoleEnum, compareRole: UserRoleEnum): boolean {
 	const roles = Object.values(UserRoleEnum);
 	const roleIndex = roles.indexOf(role);
@@ -45,8 +33,12 @@ export function isUserRoleEqualOrBelow(role: UserRoleEnum, compareRole: UserRole
 	return roleIndex !== -1 && compareRoleIndex !== -1 && roleIndex <= compareRoleIndex;
 }
 
-export function listUserRolesWithLabel(): { label: string; value: string }[] {
-	return Object.values(UserRoleEnum).map((role) => ({
+export function listUserRolesWithLabel(roleList?: UserRoleEnum[]): { label: string; value: string }[] {
+	if (!roleList) {
+		roleList = Object.values(UserRoleEnum);
+	}
+
+	return roleList.map((role) => ({
 		label: getUserRoleLabel(role),
 		value: role,
 	}));

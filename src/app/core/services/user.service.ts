@@ -3,9 +3,9 @@ import { Functions, FunctionsModule, httpsCallable } from "@angular/fire/functio
 import { PartialFirebaseUser } from "../models/firebase-user.model";
 import { collection, doc, Firestore, FirestoreModule, getDoc, getDocs } from "@angular/fire/firestore";
 import { SecureStorageService } from "./secure-storage.service";
-import { UserInvite } from "../models/user-invite.model";
-import { FirestoreCollectionsEnum } from "../enums/firebase/firestore-collections.enum";
 import { CloudFunctionsEnum } from "../enums/firebase/cloud-functions.enums";
+import { UserInvite } from "@shared/models/user-invite.model";
+import { FirestoreCollectionsEnum } from "@shared/enums/firebase/firestore-collections.enum";
 
 @Injectable({ providedIn: "root", deps: [FunctionsModule, FirestoreModule] })
 export class UserService {
