@@ -60,7 +60,6 @@ export class SignUpComponent implements OnInit {
 
 	protected loading = false;
 	protected error = "";
-	private currentPendingInvite: UserInvite | null = null;
 
 	protected readonly formSignUp = this.formBuilder.group(
 		{
@@ -126,13 +125,10 @@ export class SignUpComponent implements OnInit {
 		if (!this.token) {
 			return Promise.resolve(null);
 		}
-		if (this.currentPendingInvite) {
-			return Promise.resolve(this.currentPendingInvite);
-		}
+
 		const docRef = doc(this.firestore, `pendingInvites/${this.token}`);
 		return getDoc(docRef).then((doc) => {
 			if (doc.exists()) {
-				this.currentPendingInvite = doc.data() as UserInvite;
 				return doc.data() as UserInvite;
 			}
 			return null;
@@ -157,10 +153,11 @@ export class SignUpComponent implements OnInit {
 			this.error = "La connexion à expirée ou n'est pas valide.";
 			return;
 		}
+		const pendingInvite = await this.pendingInvite;
 
 		this.loading = true;
 		try {
-			await signInWithEmailLink(this.auth, this.currentPendingInvite!.email!, window.location.href);
+			await signInWithEmailLink(this.auth, pendingInvite!.email, window.location.href);
 		} catch (e) {
 			await this.auth.signOut();
 			console.error("Error signing in with email link:", e);
