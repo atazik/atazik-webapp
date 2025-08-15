@@ -46,7 +46,8 @@
 			<tr>
 				<td>
 					<div class="name-table-container">
-						<span class="display-name-text">{{ user.displayName }}</span>
+						<span
+							class="display-name-text">{{ user.displayName + (user.uid === auth.currentUser!.uid ? " (Vous)" : "") }}</span>
 						<span class="email-text">{{ user.email }}</span>
 					</div>
 				</td>

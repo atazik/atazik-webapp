@@ -4,7 +4,7 @@ import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { FormsModule } from "@angular/forms";
-import { AuthModule } from "@angular/fire/auth";
+import { Auth, AuthModule } from "@angular/fire/auth";
 import { PartialFirebaseUser } from "../../../core/models/firebase-user.model";
 import { Card } from "primeng/card";
 import { Toolbar } from "primeng/toolbar";
@@ -34,12 +34,14 @@ import { UserInvite } from "@shared/models/user-invite.model";
 		Ripple,
 		Chip,
 		InviteUserDialogComponent,
+		AuthModule,
 	],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
 })
 export class UserManagementComponent implements OnInit {
 	private userService = inject(UserService);
+	protected auth = inject(Auth);
 
 	private usersFirebase: PartialFirebaseUser[] = [];
 	private usersInvites: UserInvite[] = [];

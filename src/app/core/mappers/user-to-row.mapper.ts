@@ -6,10 +6,11 @@ import { UserStatusEnum } from "@shared/enums/user-status.enum";
 import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow {
-	const { email, displayName, emailVerified, customClaims } = user;
+	const { uid, email, displayName, emailVerified, customClaims } = user;
 	const statusActivated = emailVerified && customClaims?.["status"] === UserStatusEnum.ACTIVATED;
 
 	return {
+		uid: uid,
 		displayName: displayName || "Aucun nom défini",
 		email: email || "Aucun e-mail défini",
 		statusChip: {
