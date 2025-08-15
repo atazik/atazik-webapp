@@ -5,7 +5,7 @@ import {
 	isSignInWithEmailLink,
 	signInWithEmailLink,
 	updatePassword,
-	updateProfile,
+	updateProfile
 } from "@angular/fire/auth";
 import { CardModule } from "primeng/card";
 import { DividerModule } from "primeng/divider";
@@ -24,6 +24,7 @@ import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
 import { getUserRoleLabel } from "@shared/utils/user-role.utils";
 import { UserInvite } from "@shared/models/user-invite.model";
+import { matchFields } from "../../shared/validators/password-confirm.validator";
 
 @Component({
 	selector: "app-sign-up",
@@ -60,14 +61,19 @@ export class SignUpComponent implements OnInit {
 	protected loading = false;
 	protected error = "";
 
-	protected readonly formSignUp = this.formBuilder.group({
-		firstName: ["", { validators: [Validators.required] }],
-		lastName: ["", { validators: [Validators.required] }],
-		role: ["", { validators: [Validators.required] }],
-		email: ["", { validators: [Validators.required, Validators.email] }],
-		password: ["", { validators: [Validators.required] }],
-		confirmPassword: ["", { validators: [Validators.required] }],
-	});
+	protected readonly formSignUp = this.formBuilder.group(
+		{
+			firstName: ["", { validators: [Validators.required] }],
+			lastName: ["", { validators: [Validators.required] }],
+			role: ["", { validators: [Validators.required] }],
+			email: ["", { validators: [Validators.required, Validators.email] }],
+			password: ["", { validators: [Validators.required] }],
+			confirmPassword: ["", { validators: [Validators.required] }],
+		},
+		{
+			validators: [matchFields("password", "confirmPassword", "passwordMismatch")],
+		},
+	);
 
 	public ngOnInit(): void {
 		if (!this.isSignInWithEmailLink) {
@@ -101,6 +107,7 @@ export class SignUpComponent implements OnInit {
 				summary: "Invitation expirée",
 				detail: "Le lien de connexion n'est pas valide ou a expiré.",
 			});
+			await this.auth.signOut();
 			this.router.navigate(["/"]);
 			return;
 		}
@@ -150,6 +157,7 @@ export class SignUpComponent implements OnInit {
 		try {
 			await signInWithEmailLink(this.auth, email!.toLowerCase().trim(), window.location.href);
 		} catch (e) {
+			await this.auth.signOut();
 			console.error("Error signing in with email link:", e);
 			this.error = "Une erreur est survenue lors de la connexion. Veuillez réessayer.";
 			this.loading = false;
@@ -161,8 +169,14 @@ export class SignUpComponent implements OnInit {
 				displayName: `${firstName} ${lastName}`,
 			});
 			await updatePassword(this.auth.currentUser!, password!);
+			await this.auth.signOut();
 			this.formSignUp.reset();
-			this.router.navigate(["/"]);
+			this.messageService.add({
+				severity: "success",
+				summary: "Inscription réussie",
+				detail: "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.",
+			});
+			this.router.navigate(["/sign-in"]);
 		} catch (error) {
 			console.error("Error during sign-up:", error);
 			this.error = "Une erreur est survenue. Veuillez réessayer.";

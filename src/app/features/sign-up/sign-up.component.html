@@ -19,21 +19,23 @@
 				<label for="firstName">Prénom</label>
 			</p-floatlabel>
 
-			<p-floatlabel>
-				<p-iconfield>
-					<p-inputicon class="pi pi-user"/>
-					<input id="role" pInputText formControlName="role" name="role" required [disabled]="true"/>
-				</p-iconfield>
-				<label for="role">Rôle</label>
-			</p-floatlabel>
+			<fieldset [disabled]="true">
+				<p-floatlabel>
+					<p-iconfield>
+						<p-inputicon class="pi pi-user"/>
+						<input id="role" pInputText formControlName="role" name="role" required [disabled]="true"/>
+					</p-iconfield>
+					<label for="role">Rôle</label>
+				</p-floatlabel>
 
-			<p-floatlabel>
-				<p-iconfield>
-					<p-inputicon class="pi pi-at"/>
-					<input id="email" pInputText formControlName="email" name="email" required [disabled]="true"/>
-				</p-iconfield>
-				<label for="email">Adresse email</label>
-			</p-floatlabel>
+				<p-floatlabel>
+					<p-iconfield>
+						<p-inputicon class="pi pi-at"/>
+						<input id="email" pInputText formControlName="email" name="email" required [disabled]="true"/>
+					</p-iconfield>
+					<label for="email">Adresse email</label>
+				</p-floatlabel>
+			</fieldset>
 
 			<p-floatlabel>
 				<p-iconfield>
@@ -53,6 +55,10 @@
 				</p-iconfield>
 				<label for="confirmPassword">Confirmer votre mot de passe</label>
 			</p-floatlabel>
+
+			@if (formSignUp.touched && formSignUp.errors?.['passwordMismatch']) {
+				<p-message severity="error">Les mots de passe ne correspondent pas.</p-message>
+			}
 
 			<p-button pRipple icon="pi pi-user-plus" type="submit" label="S'inscrire"
 								[disabled]="formSignUp.invalid" [loading]="loading"/>
