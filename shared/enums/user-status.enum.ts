@@ -10,8 +10,14 @@ export const enum UserStatusEnum {
 	ACTIVATED = "activated",
 
 	/**
-	 * User is inactive and has limited access to the application.
+	 * User is invite and has limited access to the application.
 	 * Can only sign up with the email sign-in method they received.
 	 */
 	INVITED = "invited",
+
+	/**
+	 * User is deleted and has no access to the application.
+	 * This status is used to mark users who have been removed from the system.
+	 */
+	DELETED = "invited",
 }

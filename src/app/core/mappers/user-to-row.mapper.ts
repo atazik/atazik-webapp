@@ -4,6 +4,7 @@ import { getUserRoleLabel } from "@shared/utils/user-role.utils";
 import { UserInvite } from "@shared/models/user-invite.model";
 import { UserStatusEnum } from "@shared/enums/user-status.enum";
 import { UserRoleEnum } from "@shared/enums/user-roles.enum";
+import { getStatusLabel } from "@shared/utils/user-status.utils";
 
 export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow {
 	const { uid, email, displayName, emailVerified, customClaims } = user;
@@ -51,18 +52,4 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 
 export function mapUserInvitesToRows(invites: UserInvite[]): FirebaseUserRow[] {
 	return invites.map(mapUserInviteToRow);
-}
-
-function getStatusLabel(status?: string, emailVerified?: boolean): string {
-	if (!status) {
-		return "Inconnu";
-	}
-
-	if (status === UserStatusEnum.ACTIVATED) {
-		return emailVerified ? "Activé" : "E-mail non vérifié";
-	} else if (status === UserStatusEnum.INVITED) {
-		return "Invité";
-	} else {
-		return "Inconnu";
-	}
 }

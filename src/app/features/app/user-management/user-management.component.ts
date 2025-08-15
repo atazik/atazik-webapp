@@ -49,6 +49,8 @@ export class UserManagementComponent implements OnInit {
 	protected loading = false;
 
 	protected inviteDialogVisible = false;
+	protected editRoleDialogVisible = false;
+	protected deleteUserDialogVisible = false;
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -103,5 +105,9 @@ export class UserManagementComponent implements OnInit {
 	 */
 	confirmInviteDialog() {
 		this.fetchUsers();
+	}
+
+	openEditRoleDialog() {
+		this.editRoleDialogVisible = true;
 	}
 }

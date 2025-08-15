@@ -59,7 +59,17 @@
 					<p-chip [label]="user.roleChip.label" [icon]="user.roleChip.icon" [removable]="user.roleChip.removable"
 									class="role-chip {{ user.roleChip.class }}"/>
 				</td>
-				<td></td>
+				<td class="action-cell">
+					<p-button icon="pi pi-pencil" class="action-button" text
+										[disabled]="user.uid === auth.currentUser!.uid"
+										aria-label="Modifier le rôle de l'utilisateur"
+										(click)="openEditRoleDialog(user)"/>
+					<p-button icon="pi pi-trash" class="action-button" text severity="danger"
+										[disabled]="user.uid === auth.currentUser!.uid"
+										aria-label="Supprimer l'utilisateur"
+										(click)="openDeleteUserDialog(user)"/>
+
+				</td>
 			</tr>
 		</ng-template>
 

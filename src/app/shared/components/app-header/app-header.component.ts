@@ -7,7 +7,7 @@ import { ConfirmDialog } from "primeng/confirmdialog";
 import { ButtonModule } from "primeng/button";
 import { isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
 import { UserRoleEnum } from "@shared/enums/user-roles.enum";
-import { RoleService } from "../../../core/services/role.service";
+import { ClaimService } from "../../../core/services/claim.service";
 
 @Component({
 	selector: "app-header",
@@ -17,7 +17,7 @@ import { RoleService } from "../../../core/services/role.service";
 	styleUrl: "./app-header.component.scss",
 })
 export class AppHeaderComponent {
-	private roleService = inject(RoleService);
+	private roleService = inject(ClaimService);
 	protected auth = inject(Auth);
 	private router = inject(Router);
 	private confirmationService = inject(ConfirmationService);
