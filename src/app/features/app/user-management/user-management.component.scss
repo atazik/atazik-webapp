@@ -1,8 +1,7 @@
-@use 'mixins' as *;
+@use '../../../../styles/mixins' as *;
 
 :host {
 	@include container();
-	gap: 2rem;
 
 	@media (max-width: 768px) {
 		padding: 2rem;
@@ -19,6 +18,7 @@
 	p-card {
 		width: 100%;
 		flex: 1;
+		margin-top: 2rem;
 
 		display: flex;
 		flex-direction: column;

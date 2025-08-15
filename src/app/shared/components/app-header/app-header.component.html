@@ -9,9 +9,11 @@
 			<a routerLink="/app" routerLinkActive="active-link" aria-label="Accueil">
 				<span>Accueil</span>
 			</a>
-			<a routerLink="/app/user-management" routerLinkActive="active-link" aria-label="Gestion des utilisateurs">
-				<span>Gestion des utilisateurs</span>
-			</a>
+			@if (isPresidentOrHigher()) {
+				<a routerLink="/app/user-management" routerLinkActive="active-link" aria-label="Gestion des utilisateurs">
+					<span>Gestion des utilisateurs</span>
+				</a>
+			}
 		</nav>
 		<p-button link type="button" (click)="confirmSignOut()" (keydown.enter)="confirmSignOut()">
 			<i class="pi pi-sign-out" pButtonIcon></i>

@@ -3,7 +3,7 @@
 	<p class="text-secondary">
 		<i class="pi pi-info-circle"></i>
 		Un e-mail d'invitation sera envoyé à l'utilisateur, il pourra alors créer son compte et se connecter à
-		l'application.
+		l'application. Le lien d'invitation expirera après 24 heures.
 	</p>
 	<form [formGroup]="formInviteUser" (ngSubmit)="onSubmit()">
 		<div class="flex items-center gap-4 mb-4">
@@ -14,7 +14,7 @@
 		<div class="flex items-center gap-4 mb-8">
 			<label for="role" class="font-semibold w-24">Rôle</label>
 			<p-select inputId="role" placeholder="Choisir un rôle" formControlName="role" [options]="roles"
-								optionLabel="label" class="flex-auto" optionValue="value" required/>
+								optionLabel="label" class="flex-auto" optionValue="value" required appendTo="body"/>
 		</div>
 		<div class="flex justify-end items-center gap-2">
 			@if (error) {
@@ -25,5 +25,4 @@
 								[loading]="loading"/>
 		</div>
 	</form>
-
 </p-dialog>

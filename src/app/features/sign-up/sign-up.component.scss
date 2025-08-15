@@ -15,6 +15,12 @@
 			flex-direction: column;
 			gap: 1.75rem;
 
+			fieldset {
+				display: flex;
+				flex-direction: column;
+				gap: 1.75rem;
+			}
+
 			input, p-password, p-button {
 				width: 100%;
 			}
