@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { Functions, FunctionsModule, httpsCallable } from "@angular/fire/functions";
 import { PartialFirebaseUser } from "../models/firebase-user.model";
-import { collection, doc, Firestore, FirestoreModule, getDoc, getDocs } from "@angular/fire/firestore";
+import { collection, deleteDoc, doc, Firestore, FirestoreModule, getDoc, getDocs } from "@angular/fire/firestore";
 import { SecureStorageService } from "./secure-storage.service";
 import { CloudFunctionsEnum } from "../enums/firebase/cloud-functions.enums";
 import { UserInvite } from "@shared/models/user-invite.model";
@@ -41,7 +41,9 @@ export class UserService {
 		const querySnapshot = await getDocs(getInvites);
 		const invites: UserInvite[] = [];
 		querySnapshot.forEach((doc) => {
-			invites.push(doc.data() as UserInvite);
+			const validInvite = doc.data() as UserInvite;
+			validInvite.uid = doc.id;
+			invites.push(validInvite);
 		});
 		return invites;
 	}
@@ -95,6 +97,64 @@ export class UserService {
 		localStorage.removeItem(this.userAuthVersionStorageKey);
 		// Clear the secure storage cache for users
 		this.secureStorageService.removeItem(this.firebaseUsersStorageKey);
+	}
+
+	/**
+	 * Resend an invitation to a user.
+	 * This method checks if the invite exists before attempting to resend it.
+	 * If the invite does not exist, it throws an error.
+	 * If the invite exists, it calls the inviteUserByEmail function to resend the invite
+	 * and updates the invite's timestamp.
+	 */
+	public async resendInvite(invite: UserInvite): Promise<void> {
+		if (!invite || !invite.email || !invite.uid) {
+			throw new Error("Invite must contain an email and an uid to resend.");
+		}
+
+		const docRef = doc(this.firestore, FirestoreCollectionsEnum.PENDING_INVITES, invite.uid!);
+		const docSnapshot = await getDoc(docRef);
+		if (!docSnapshot.exists()) {
+			throw new Error("Invite does not exist");
+		}
+
+		// Call the cloud function to resend the invite
+		const resendInviteFunction = httpsCallable(this.functions, CloudFunctionsEnum.RESEND_INVITE_USER);
+		await resendInviteFunction(invite).catch((error) => {
+			console.error("Error resending invite:", error);
+			throw new Error("Failed to resend invite");
+		});
+	}
+
+	/**
+	 * Deletes a user invite from Firestore.
+	 * This method checks if the invite exists before attempting to delete it.
+	 * If the invite does not exist, it throws an error.
+	 * If the invite exists, it deletes the invite document from Firestore.
+	 */
+	public async deleteUserInvite(inviteId: string): Promise<void> {
+		const docRef = doc(this.firestore, FirestoreCollectionsEnum.PENDING_INVITES, inviteId);
+		return getDoc(docRef)
+			.then(async (doc) => {
+				if (doc.exists()) {
+					try {
+						return await deleteDoc(docRef);
+					} catch (error) {
+						console.error("Error deleting user invite:", error);
+						throw new Error("Failed to delete user invite");
+					}
+				} else {
+					throw new Error("Invite does not exist");
+				}
+			})
+			.catch((error) => {
+				console.error("Error fetching user invite:", error);
+				throw new Error("Failed to fetch user invite");
+			});
+	}
+
+	public async deleteAuthUser(uid: string): Promise<void> {
+		const deleteUserFunction = httpsCallable(this.functions, CloudFunctionsEnum.DELETE_AUTH_USER);
+		await deleteUserFunction({ uid });
 	}
 
 	/**

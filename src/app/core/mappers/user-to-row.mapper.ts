@@ -14,6 +14,8 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 		uid: uid,
 		displayName: displayName || "Aucun nom défini",
 		email: email || "Aucun e-mail défini",
+		status: customClaims?.["status"],
+		role: customClaims?.["role"],
 		statusChip: {
 			label: getStatusLabel(customClaims?.["status"], emailVerified),
 			icon: statusActivated ? "pi pi-check" : "pi pi-times",
@@ -35,8 +37,11 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 	const { email, role } = invite;
 
 	return {
+		uid: invite.uid,
 		displayName: "Invitation en attente",
 		email: email || "Aucun e-mail défini",
+		status: UserStatusEnum.INVITED,
+		role: role,
 		statusChip: {
 			label: "Invité",
 			icon: "pi pi-clock",

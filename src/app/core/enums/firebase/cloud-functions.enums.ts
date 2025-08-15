@@ -19,4 +19,16 @@ export const enum CloudFunctionsEnum {
 	 * This function is triggered when a president or more edit a user role.
 	 */
 	EDIT_USER_ROLE = "editUserRole",
+
+	/**
+	 * Cloud function to resend an invite to a user.
+	 * This function is triggered when a president or more resend an invite to a user.
+	 */
+	RESEND_INVITE_USER = "resendInviteUser",
+
+	/**
+	 * Cloud function to delete a user in Firebase Auth.
+	 * This function is triggered when a president or more delete a user.
+	 */
+	DELETE_AUTH_USER = "deleteAuthUser",
 }

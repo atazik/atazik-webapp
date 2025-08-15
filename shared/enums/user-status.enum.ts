@@ -3,7 +3,7 @@
  * This enum is used to define the status that users can have,
  * which can be used for access control and permissions. (Depending on the role)
  */
-export const enum UserStatusEnum {
+export enum UserStatusEnum {
 	/**
 	 * User is active and has full access to the application.
 	 */

@@ -4,10 +4,10 @@ import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
 import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
-import { UserRoleEnum } from "@shared/enums/user-roles.enum";
-import { UserStatusEnum } from "@shared/enums/user-status.enum";
-import { FirestoreCollectionsEnum } from "@shared/enums/firebase/firestore-collections.enum";
-import { getUserRoleLabel, isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
+import { UserRoleEnum } from "./shared/enums/user-roles.enum";
+import { UserStatusEnum } from "./shared/enums/user-status.enum";
+import { FirestoreCollectionsEnum } from "./shared/enums/firebase/firestore-collections.enum";
+import { getUserRoleLabel, isUserRoleEqualOrHigher } from "./shared/utils/user-role.utils";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
@@ -239,11 +239,17 @@ export const editUserRole = functions.https.onCall(async (request, response) => 
 		throw new functions.https.HttpsError("invalid-argument", "Rôle invalide.");
 	}
 
-	// Check if the target user have a role below the requester
-	if (!isUserRoleEqualOrHigher(role, request.auth?.token.role)) {
+	const user = await getAuth()
+		.getUser(uid)
+		.catch((error) => {
+			console.error("Error fetching user:", error);
+			throw new functions.https.HttpsError("not-found", "Utilisateur non trouvé.");
+		});
+
+	if (isUserRoleEqualOrHigher(request.auth?.token["role"], user.customClaims!["role"])) {
 		throw new functions.https.HttpsError(
-			"permission-denied",
-			"Vous n'êtes pas autorisé à modifier le rôle de cet utilisateur.",
+			"failed-precondition",
+			"Vous ne pouvez pas rétrograder un utilisateur à un rôle égal ou supérieur au vôtre.",
 		);
 	}
 
@@ -260,6 +266,128 @@ export const editUserRole = functions.https.onCall(async (request, response) => 
 		console.error("Error updating user role:", error);
 		throw new functions.https.HttpsError("internal", "Erreur lors de la modification du rôle de l'utilisateur.");
 	}
+});
+
+/**
+ * Cloud Function to delete a user.
+ * This function is callable via HTTPS and allows an authenticated user (an admin or president)
+ * to delete a user by their UID.
+ * It checks if the requester has the right permissions to delete the user.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const deleteAuthUser = functions.https.onCall(async (request, response) => {
+	if (!isAuthorized(request, UserRoleEnum.PRESIDENT)) {
+		throw new functions.https.HttpsError(
+			"unauthenticated",
+			"Seuls les utilisateurs authentifiés et administrateurs peuvent supprimer un utilisateur.",
+		);
+	}
+
+	const { uid } = request.data;
+
+	if (!uid) {
+		throw new functions.https.HttpsError("invalid-argument", "L'UID de l'utilisateur est requis.");
+	}
+
+	const user = await getAuth()
+		.getUser(uid)
+		.catch((error) => {
+			console.error("Error fetching user:", error);
+			throw new functions.https.HttpsError("not-found", "Utilisateur non trouvé.");
+		});
+
+	if (
+		isUserRoleEqualOrHigher(request.auth?.token["role"], user.customClaims!["role"]) &&
+		request.auth?.token.email !== ownerEmail.value()
+	) {
+		throw new functions.https.HttpsError(
+			"failed-precondition",
+			"Vous ne pouvez pas rétrograder un utilisateur à un rôle égal ou supérieur au vôtre.",
+		);
+	}
+
+	try {
+		await getAuth().deleteUser(uid);
+		return { success: true, message: "Utilisateur supprimé avec succès." };
+	} catch (error) {
+		console.error("Error deleting user:", error);
+		throw new functions.https.HttpsError("internal", "Erreur lors de la suppression de l'utilisateur.");
+	}
+});
+
+/**
+ * Cloud Function to resend an invite to a user.
+ * This function is callable via HTTPS and allows an authenticated user (an admin or president)
+ * to resend an invitation to a user by their email and UID.
+ * It checks if the requester has the right permissions to resend the invite.
+ * If the invite exists, it generates a new sign-in link and sends it to the user
+ * via email.
+ * If the invite does not exist, it throws an error.
+ * The email is sent using nodemailer with the configuration defined in the environment variables.
+ * The email contains a link to finalize the account creation.
+ * The link expires after a certain time (1 day).
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const resendInviteUser = functions.https.onCall({ secrets: [emailPass] }, async (request, response) => {
+	if (!isAuthorized(request, UserRoleEnum.PRESIDENT)) {
+		throw new functions.https.HttpsError(
+			"unauthenticated",
+			"Seuls les utilisateurs authentifiés et administrateurs peuvent renvoyer une invitation.",
+		);
+	}
+
+	const { email, uid } = request.data;
+	if (!email || !uid) {
+		throw new functions.https.HttpsError("invalid-argument", "L'e-mail et l'UID sont requis.");
+	}
+
+	const pendingInviteDoc = await admin.firestore().collection(FirestoreCollectionsEnum.PENDING_INVITES).doc(uid).get();
+	if (!pendingInviteDoc.exists) {
+		throw new functions.https.HttpsError("not-found", "Aucune invitation en attente trouvée pour cet utilisateur.");
+	}
+
+	const pendingInviteData = pendingInviteDoc.data();
+	if (!pendingInviteData || pendingInviteData.email !== email) {
+		throw new functions.https.HttpsError("not-found", "Aucune invitation en attente trouvée pour cet e-mail.");
+	}
+
+	// Générer le lien de connexion/création d'e-mail
+	const actionCodeSettings: ActionCodeSettings = {
+		url: emailSignUpLink.value() + `?token=${uid}`,
+		handleCodeInApp: true,
+	};
+
+	const link = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+	// Envoyer l'e-mail à l'utilisateur
+	await transporter(emailPass.value()).sendMail({
+		from: emailUser.value(),
+		to: email,
+		subject: `Rappel d'invitation à rejoindre ${appName.value()}`,
+		html: `
+				<p>Bonjour,</p>
+				<p>Vous avez été invité à créer un compte sur ${appName.value()} avec le rôle ${getUserRoleLabel(pendingInviteData.role)}.</p>
+				<p>Cliquez sur le lien ci-dessous pour finaliser la création de votre compte :</p>
+				<p><a href="${link}">Finaliser l'inscription</a></p>
+				<p>Ce lien expirera dans un certain temps. Ne le partagez pas.</p>
+				<p>Cordialement,</p>
+				<p>L'équipe ${appName.value()}</p>
+			`,
+	});
+
+	// Update the pending invite with a new expiration date
+	await admin
+		.firestore()
+		.collection(FirestoreCollectionsEnum.PENDING_INVITES)
+		.doc(uid)
+		.update({
+			expiresAt: Date.now() + 24 * 60 * 60 * 1000, // expire dans 1 jour
+		})
+		.catch((error) => {
+			console.error("Error updating pending invite expiration:", error);
+			throw new functions.https.HttpsError("internal", "Erreur lors de la mise à jour de l'invitation en attente.");
+		});
+
+	return { success: true, message: "Invitation renvoyée avec succès." };
 });
 
 /**

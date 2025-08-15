@@ -19,6 +19,12 @@ import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dial
 import { UserInvite } from "@shared/models/user-invite.model";
 import { Tooltip } from "primeng/tooltip";
 import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.component";
+import { ConfirmDialog } from "primeng/confirmdialog";
+import { ConfirmationService, MessageService } from "primeng/api";
+import { UserStatusEnum } from "@shared/enums/user-status.enum";
+import { isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
+import { ClaimService } from "../../../core/services/claim.service";
+import { ToastModule } from "primeng/toast";
 
 @Component({
 	selector: "app-user-management",
@@ -39,13 +45,20 @@ import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.com
 		AuthModule,
 		Tooltip,
 		EditRoleDialogComponent,
+		ConfirmDialog,
+		ToastModule,
 	],
+	providers: [ConfirmationService, MessageService],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
 })
 export class UserManagementComponent implements OnInit {
 	private userService = inject(UserService);
+	private confirmationService = inject(ConfirmationService);
+	private messageService = inject(MessageService);
+	private claimService = inject(ClaimService);
 	protected auth = inject(Auth);
+	protected role = this.claimService.role;
 
 	private usersFirebase: PartialFirebaseUser[] = [];
 	private usersInvites: UserInvite[] = [];
@@ -54,9 +67,8 @@ export class UserManagementComponent implements OnInit {
 
 	protected inviteDialogVisible = false;
 	protected editRoleDialogVisible = false;
-	protected deleteUserDialogVisible = false;
 
-	selectedUser = signal<FirebaseUserRow | null>(null);
+	protected selectedUser = signal<FirebaseUserRow | null>(null);
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -68,14 +80,19 @@ export class UserManagementComponent implements OnInit {
 	async fetchUsers() {
 		this.loading = true;
 
+		// Get users from Firebase auth
 		await this.userService
 			.fetchUsers()
 			.then((users) => {
 				this.usersFirebase = users;
 			})
 			.catch((error) => {
+				this.messageService.add({
+					severity: "error",
+					summary: "Erreur de chargement des utilisateurs",
+					detail: "Une erreur est survenue lors du chargement des utilisateurs. Veuillez réessayer plus tard.",
+				});
 				console.error("Error fetching users:", error);
-				alert("Failed to fetch users. Please try again later.");
 			});
 
 		// Get invites
@@ -85,8 +102,12 @@ export class UserManagementComponent implements OnInit {
 				this.usersInvites = invites;
 			})
 			.catch((error) => {
+				this.messageService.add({
+					severity: "error",
+					summary: "Erreur de chargement des invitations",
+					detail: "Une erreur est survenue lors du chargement des invitations. Veuillez réessayer plus tard.",
+				});
 				console.error("Error fetching invites:", error);
-				alert("Failed to fetch invites. Please try again later.");
 			});
 
 		this.userRows = mapFirebaseUsersToRows(this.usersFirebase);
@@ -102,24 +123,120 @@ export class UserManagementComponent implements OnInit {
 	/**
 	 * Opens the invite dialog.
 	 */
-	openInviteDialog() {
+	protected openInviteDialog() {
 		this.inviteDialogVisible = true;
 	}
 
 	/**
 	 * Closes the invite dialog.
 	 */
-	confirmInviteDialog() {
+	protected confirmInviteDialog() {
 		this.fetchUsers();
 	}
 
-	openEditRoleDialog(user: FirebaseUserRow) {
+	protected openEditRoleDialog(user: FirebaseUserRow) {
 		this.selectedUser.set(user);
 		this.editRoleDialogVisible = true;
 	}
 
-	openDeleteUserDialog(user: FirebaseUserRow) {
-		this.selectedUser.set(user);
-		this.deleteUserDialogVisible = true;
+	protected openDeleteUserDialog(user: FirebaseUserRow) {
+		if (user.status === UserStatusEnum.INVITED) {
+			this.confirmationService.confirm({
+				message: "Êtes-vous sûr de vouloir supprimer cet invitation ?",
+				header: "Suppression d'invitation",
+				icon: "pi pi-exclamation-triangle",
+				acceptLabel: "Supprimer l'invitation",
+				rejectLabel: "Annuler",
+				rejectButtonStyleClass: "p-button-secondary",
+				accept: () => {
+					this.userService
+						.deleteUserInvite(user.uid!)
+						.then(() => {
+							this.messageService.add({
+								severity: "success",
+								summary: "Invitation supprimée",
+								detail: `L'invitation pour ${user.email} a été supprimée avec succès.`,
+							});
+							this.fetchUsers();
+						})
+						.catch((error) => {
+							this.messageService.add({
+								severity: "error",
+								summary: "Erreur de suppression",
+								detail: `Une erreur est survenue lors de la suppression de l'invitation pour ${user.email}. Veuillez réessayer plus tard.`,
+							});
+							console.error("Error deleting user:", error);
+						});
+				},
+			});
+		} else {
+			this.confirmationService.confirm({
+				message: "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Il ne pourra plus accèder à l'application.",
+				header: "Suppression d'utilisateur",
+				icon: "pi pi-exclamation-triangle",
+				acceptLabel: "Supprimer l'utilisateur",
+				rejectLabel: "Annuler",
+				rejectButtonStyleClass: "p-button-secondary",
+				accept: () => {
+					this.userService
+						.deleteAuthUser(user.uid!)
+						.then(() => {
+							this.messageService.add({
+								severity: "success",
+								summary: "Utilisateur supprimé",
+								detail: `L'utilisateur ${user.email} a été supprimé avec succès.`,
+							});
+							this.userService.invalidateUsersCache();
+							this.fetchUsers();
+							this.confirmationService.close();
+						})
+						.catch((error) => {
+							this.messageService.add({
+								severity: "error",
+								summary: "Erreur de suppression",
+								detail: `Une erreur est survenue lors de la suppression de l'utilisateur ${user.email}. Veuillez réessayer plus tard.`,
+							});
+							console.error("Error deleting user:", error);
+							this.confirmationService.close();
+						});
+				},
+			});
+		}
 	}
+
+	protected reSendInviteEmail(user: FirebaseUserRow) {
+		this.confirmationService.confirm({
+			message: `Êtes-vous sûr de vouloir renvoyer l'invitation à ${user.email} ?`,
+			header: "Renvoyer l'invitation",
+			icon: "pi pi-exclamation-triangle",
+			acceptLabel: "Renvoyer l'invitation",
+			rejectLabel: "Annuler",
+			rejectButtonStyleClass: "p-button-secondary",
+			accept: () => {
+				this.userService
+					.resendInvite(user)
+					.then(() => {
+						this.messageService.add({
+							severity: "success",
+							summary: "Invitation renvoyée",
+							detail: `L'invitation pour ${user.email} a été renvoyée avec succès.`,
+						});
+						this.fetchUsers();
+						this.confirmationService.close();
+					})
+					.catch((error) => {
+						console.error("Error resending invite email:", error);
+						this.messageService.add({
+							severity: "error",
+							summary: "Erreur lors de l'envoi de l'invitation",
+							detail: `Une erreur est survenue lors de l'envoi de l'invitation pour ${user.email}. Veuillez réessayer plus tard.`,
+						});
+						this.confirmationService.close();
+					});
+			},
+		});
+	}
+
+	protected readonly UserStatusEnum = UserStatusEnum;
+	protected readonly isUserRoleEqualOrHigher = isUserRoleEqualOrHigher;
 }

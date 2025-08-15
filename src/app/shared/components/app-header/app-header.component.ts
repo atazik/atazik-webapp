@@ -36,6 +36,7 @@ export class AppHeaderComponent {
 			icon: "pi pi-exclamation-triangle",
 			acceptLabel: "Me déconnecter",
 			rejectLabel: "Annuler",
+			rejectButtonStyleClass: "p-button-secondary",
 			accept: () => {
 				this.auth.signOut().then(async () => {
 					this.messageService.add({ severity: "info", summary: "Déconnecté", detail: "Vous êtes déconnecté" });
