@@ -1,11 +1,36 @@
-<p-card>
-	@if (isSignInWithEmailLink) {
+<p-toast/>
+@if (isSignInWithEmailLink) {
+	<p-card header="S'inscrire">
 		<p-divider/>
 		<form (ngSubmit)="onSubmit()" [formGroup]="formSignUp">
 			<p-floatlabel>
 				<p-iconfield>
+					<p-inputicon class="pi pi-users"/>
+					<input id="lastName" pInputText formControlName="lastName" name="lastName" required/>
+				</p-iconfield>
+				<label for="lastName">Nom de famille</label>
+			</p-floatlabel>
+
+			<p-floatlabel>
+				<p-iconfield>
+					<p-inputicon class="pi pi-user"/>
+					<input id="firstName" pInputText formControlName="firstName" name="firstName" required/>
+				</p-iconfield>
+				<label for="firstName">Prénom</label>
+			</p-floatlabel>
+
+			<p-floatlabel>
+				<p-iconfield>
+					<p-inputicon class="pi pi-user"/>
+					<input id="role" pInputText formControlName="role" name="role" required [disabled]="true"/>
+				</p-iconfield>
+				<label for="role">Rôle</label>
+			</p-floatlabel>
+
+			<p-floatlabel>
+				<p-iconfield>
 					<p-inputicon class="pi pi-at"/>
-					<input id="email" pInputText formControlName="email" name="email" required/>
+					<input id="email" pInputText formControlName="email" name="email" required [disabled]="true"/>
 				</p-iconfield>
 				<label for="email">Adresse email</label>
 			</p-floatlabel>
@@ -19,12 +44,22 @@
 				<label for="password">Mot de passe</label>
 			</p-floatlabel>
 
+			<p-floatlabel>
+				<p-iconfield>
+					<p-inputicon class="pi pi-lock"/>
+					<p-password inputId="confirmPassword" name="confirmPassword" formControlName="confirmPassword"
+											[feedback]="false"
+											toggleMask="true" required/>
+				</p-iconfield>
+				<label for="confirmPassword">Confirmer votre mot de passe</label>
+			</p-floatlabel>
+
 			<p-button pRipple icon="pi pi-user-plus" type="submit" label="S'inscrire"
 								[disabled]="formSignUp.invalid" [loading]="loading"/>
 		</form>
 		@if (error) {
 			<p-message severity="error">{{ error }}</p-message>
 		}
-	}
-</p-card>
+	</p-card>
+}
 

@@ -1,17 +1,9 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
 import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
@@ -21,7 +13,7 @@ const emailSignUpLink = defineString("EMAIL_SIGNUP_LINK");
 const emailUser = defineString("EMAIL_USER");
 const emailHost = defineString("EMAIL_HOST");
 const emailPort = defineString("EMAIL_PORT");
-const emailPass = defineSecret("EMAIL_PASS"); // secret for email password
+const emailPass = defineSecret("EMAIL_PASS");
 const appName = defineString("APP_NAME");
 
 // Configuration for nodemailer
@@ -74,30 +66,52 @@ export const getAllUsers = functions.https.onCall(async (request, response) => {
 });
 
 /**
- * Cloud Function to add default claims to a user when they are created.
+ * Cloud Function to add default claims to a user when they are created and block if needed.
  * This function is triggered before a user is created in Firebase Authentication.
- * It sets the default role and status for the user.
+ * It sets the role and status for the user.
+ * Get the pending invite for the user and delete it.
+ * It also updates the user auth version in Firestore.
  */
-export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEvent) => {
+export const beforeCreateAuthUser = functions.identity.beforeUserCreated(async (authEvent) => {
 	const user = authEvent.data;
 	if (!user) {
 		throw new functions.https.HttpsError("invalid-argument", "No use found in auth event data");
 	}
 
-	if (!user.customClaims) {
-		user.customClaims = {};
+	const email = user.email?.toLowerCase().trim();
+	if (!email) {
+		throw new functions.https.HttpsError("invalid-argument", "L'e-mail de l'utilisateur est requis.");
 	}
-	user.customClaims.role = "user";
-	user.customClaims.status = "activated";
 
-	// Delete pendingInvites collection item if it exists
 	const pendingInvitesCollection = admin.firestore().collection("pendingInvites");
-	pendingInvitesCollection
-		.doc(user.email?.toLowerCase().trim() || "")
+	const pendingInviteDoc = await pendingInvitesCollection.where("email", "==", email).limit(1).get();
+
+	if (pendingInviteDoc.empty) {
+		// If no pending invite, block the user creation
+		throw new functions.https.HttpsError("failed-precondition", "Aucun utilisateur en attente d'invitation trouvé.");
+	}
+
+	// Delete the pending invite if it exists
+	const pendingInviteId = pendingInviteDoc.docs[0].id;
+	await pendingInvitesCollection
+		.doc(pendingInviteId)
 		.delete()
 		.catch((error) => {
 			console.error("Error deleting pending invite:", error);
+			throw new functions.https.HttpsError("internal", "Erreur lors de la suppression de l'invitation en attente.");
 		});
+
+	const docData = pendingInviteDoc.docs[0].data();
+	if (docData["expiresAt"] < Date.now()) {
+		throw new functions.https.HttpsError("failed-precondition", "L'invitation a expiré.");
+	}
+
+	// Set default custom claims for the user
+	if (!user.customClaims) {
+		user.customClaims = {};
+	}
+	user.customClaims.role = pendingInviteDoc.docs[0].data()!["role"];
+	user.customClaims.status = "activated";
 
 	// Update user auth version in Firestore
 	const docRef = admin.firestore().doc("admin/global");
@@ -118,7 +132,7 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated((authEv
  */
 export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }, async (request, response) => {
 	if (
-		(!request.auth || !request.auth.token.role || request.auth.token.role !== "admin") &&
+		(!request.auth || !request.auth.token.role || !["admin", "president"].includes(request.auth.token.role)) &&
 		request.auth?.token.email !== "sacha.barbet@proton.me"
 	) {
 		throw new functions.https.HttpsError(
@@ -127,27 +141,34 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 		);
 	}
 
-	const { email, role } = request.data;
+	let { email, role } = request.data;
 
 	if (!email || !role) {
 		throw new functions.https.HttpsError("invalid-argument", "L'e-mail et le rôle sont requis.");
 	}
+	email = email.toLowerCase().trim();
+	role = role.toLowerCase().trim();
 
+	const token = uuidv4();
 	const collectionName = "pendingInvites";
 
 	try {
-		// Enregistrer l'invitation en attente dans Firestore
-		await admin.firestore().collection(collectionName).doc(email).set({
-			email: email,
-			role: role,
-			status: "invited",
-			createdAt: admin.firestore.FieldValue.serverTimestamp(),
-		});
+		// Save the pending invite in Firestore
+		await admin
+			.firestore()
+			.collection(collectionName)
+			.doc(token)
+			.set({
+				email: email,
+				role: role,
+				status: "invited",
+				createdAt: admin.firestore.FieldValue.serverTimestamp(),
+				expiresAt: Date.now() + 24 * 60 * 60 * 1000, // expire dans 1 jour
+			});
 
 		// Générer le lien de connexion/création d'e-mail
 		const actionCodeSettings: ActionCodeSettings = {
-			url: emailSignUpLink.value(),
-			// Ceci doit être vrai pour les liens de connexion
+			url: emailSignUpLink.value() + `?token=${token}`,
 			handleCodeInApp: true,
 		};
 

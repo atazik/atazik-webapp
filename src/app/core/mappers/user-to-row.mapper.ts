@@ -1,6 +1,7 @@
 import { PartialFirebaseUser } from "../models/firebase-user.model";
 import { FirebaseUserRow } from "../models/tables-row/firebase-user-row.model";
 import { UserInvite } from "../models/user-invite.model";
+import { getUserRoleLabel } from "../enums/user-roles.enum";
 
 export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow {
 	const { email, displayName, emailVerified, customClaims } = user;
@@ -12,16 +13,12 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 		statusChip: {
 			label: getStatusLabel(customClaims?.["status"], emailVerified),
 			icon: statusActivated ? "pi pi-check" : "pi pi-times",
-			class: statusActivated
-				? "bg-green-500 text-white"
-				: !emailVerified
-					? "bg-yellow-500 text-white"
-					: "bg-gray-500 text-white",
+			class: statusActivated ? "bg-green text-white" : !emailVerified ? "bg-yellow text-white" : "bg-gray text-white",
 		},
 		roleChip: {
-			label: getRoleLabel(customClaims?.["role"]),
+			label: getUserRoleLabel(customClaims!["role"]),
 			icon: customClaims?.["role"] === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: customClaims?.["role"] === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+			class: customClaims?.["role"] === "admin" ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -32,18 +29,19 @@ export function mapFirebaseUsersToRows(user: PartialFirebaseUser[]): FirebaseUse
 
 export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 	const { email, role } = invite;
+
 	return {
 		displayName: "Invitation en attente",
 		email: email || "Aucun e-mail défini",
 		statusChip: {
 			label: "Invité",
 			icon: "pi pi-clock",
-			class: "bg-blue-500 text-white",
+			class: "bg-blue text-white",
 		},
 		roleChip: {
-			label: getRoleLabel(role),
+			label: getUserRoleLabel(role),
 			icon: role === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: role === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+			class: role === "admin" ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -63,20 +61,5 @@ function getStatusLabel(status?: string, emailVerified?: boolean): string {
 		return "Invité";
 	} else {
 		return "Inconnu";
-	}
-}
-
-function getRoleLabel(role?: string): string {
-	if (!role) {
-		return "Inconnu";
-	}
-
-	switch (role) {
-		case "admin":
-			return "Administrateur";
-		case "user":
-			return "Utilisateur";
-		default:
-			return "Inconnu";
 	}
 }

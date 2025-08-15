@@ -3,9 +3,10 @@ import { DialogModule } from "primeng/dialog";
 import { ButtonModule } from "primeng/button";
 import { InputText } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
-import { UserService } from "../../../core/services/user.service";
+import { UserService } from "../../../../core/services/user.service";
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Message } from "primeng/message";
+import { listUserRolesWithLabel } from "../../../../core/enums/user-roles.enum";
 
 @Component({
 	selector: "app-invite-user-dialog",
@@ -30,10 +31,7 @@ export class InviteUserDialogComponent {
 		role: ["", { validators: [Validators.required] }],
 	});
 
-	protected readonly roles = [
-		{ label: "Utilisateur", value: "user" },
-		{ label: "Administrateur", value: "admin" },
-	];
+	protected readonly roles = listUserRolesWithLabel();
 
 	async onSubmit() {
 		if (this.formInviteUser.invalid) {

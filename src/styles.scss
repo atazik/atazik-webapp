@@ -80,3 +80,31 @@ p-password {
 .text-secondary {
 	color: $dark-white;
 }
+
+.bg-green {
+	background-color: darkgreen !important;
+}
+
+.bg-red {
+	background-color: darkred !important;
+}
+
+.bg-blue {
+	background-color: darkblue !important;
+}
+
+.bg-yellow {
+	background-color: darkgoldenrod !important;
+}
+
+.bg-white {
+	background-color: $white !important;
+}
+
+.bg-dark-white {
+	background-color: $dark-white !important;
+}
+
+.bg-gray {
+	background-color: gray !important;
+}

@@ -5,17 +5,17 @@ import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { FormsModule } from "@angular/forms";
 import { AuthModule } from "@angular/fire/auth";
-import { PartialFirebaseUser } from "../../core/models/firebase-user.model";
+import { PartialFirebaseUser } from "../../../core/models/firebase-user.model";
 import { Card } from "primeng/card";
 import { Toolbar } from "primeng/toolbar";
 import { IconField } from "primeng/iconfield";
 import { InputIcon } from "primeng/inputicon";
-import { UserService } from "../../core/services/user.service";
+import { UserService } from "../../../core/services/user.service";
 import { Ripple } from "primeng/ripple";
-import { mapFirebaseUsersToRows, mapUserInvitesToRows } from "../../core/mappers/user-to-row.mapper";
-import { FirebaseUserRow } from "../../core/models/tables-row/firebase-user-row.model";
+import { mapFirebaseUsersToRows, mapUserInvitesToRows } from "../../../core/mappers/user-to-row.mapper";
+import { FirebaseUserRow } from "../../../core/models/tables-row/firebase-user-row.model";
 import { Chip } from "primeng/chip";
-import { UserInvite } from "../../core/models/user-invite.model";
+import { UserInvite } from "../../../core/models/user-invite.model";
 import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dialog.component";
 
 @Component({

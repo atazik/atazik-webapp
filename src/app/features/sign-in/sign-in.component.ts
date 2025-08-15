@@ -6,7 +6,7 @@ import { ButtonModule } from "primeng/button";
 import { InputText } from "primeng/inputtext";
 import { Message } from "primeng/message";
 import { FloatLabel } from "primeng/floatlabel";
-import { FirebaseErrorsEnum } from "../../core/enums/firebase-errors.enum";
+import { FirebaseErrorsEnum } from "../../core/enums/firebase/firebase-errors.enum";
 import { PASSWORD } from "../../core/constants/regex.constant";
 import { Auth, AuthModule, signInWithEmailAndPassword } from "@angular/fire/auth";
 import { Router } from "@angular/router";
