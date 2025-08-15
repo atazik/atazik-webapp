@@ -125,6 +125,7 @@ export class SignUpComponent implements OnInit {
 		if (!this.token) {
 			return Promise.resolve(null);
 		}
+
 		const docRef = doc(this.firestore, `pendingInvites/${this.token}`);
 		return getDoc(docRef).then((doc) => {
 			if (doc.exists()) {
@@ -141,7 +142,7 @@ export class SignUpComponent implements OnInit {
 		}
 		this.error = "";
 
-		const { firstName, lastName, email, password, confirmPassword } = this.formSignUp.value;
+		const { firstName, lastName, password, confirmPassword } = this.formSignUp.value;
 
 		if (password !== confirmPassword) {
 			this.error = "Les mots de passe ne correspondent pas.";
@@ -152,10 +153,11 @@ export class SignUpComponent implements OnInit {
 			this.error = "La connexion à expirée ou n'est pas valide.";
 			return;
 		}
+		const pendingInvite = await this.pendingInvite;
 
 		this.loading = true;
 		try {
-			await signInWithEmailLink(this.auth, email!.toLowerCase().trim(), window.location.href);
+			await signInWithEmailLink(this.auth, pendingInvite!.email, window.location.href);
 		} catch (e) {
 			await this.auth.signOut();
 			console.error("Error signing in with email link:", e);
