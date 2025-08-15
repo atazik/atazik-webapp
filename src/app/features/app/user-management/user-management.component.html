@@ -1,4 +1,5 @@
-<p-confirmDialog></p-confirmDialog>
+<p-toast/>
+<p-confirmDialog/>
 
 <div>
 	<h2>
@@ -64,12 +65,18 @@
 				<td class="action-cell"
 						[pTooltip]="user.uid === auth.currentUser!.uid ? 'Vous ne pouvez pas modifier votre propre rôle ou supprimer votre compte.' : ''"
 						tooltipPosition="top">
-					<p-button icon="pi pi-pencil" class="action-button" text
-										[disabled]="user.uid === auth.currentUser!.uid"
-										aria-label="Modifier le rôle de l'utilisateur"
-										(click)="openEditRoleDialog(user)"/>
+					@if (user.status === UserStatusEnum.ACTIVATED) {
+						<p-button icon="pi pi-pencil" class="action-button" text
+											[disabled]="user.uid === auth.currentUser!.uid || isUserRoleEqualOrHigher(role()!, user.role)"
+											aria-label="Modifier le rôle de l'utilisateur"
+											(click)="openEditRoleDialog(user)"/>
+					} @else if (user.status === UserStatusEnum.INVITED) {
+						<p-button icon="pi pi-envelope" class="action-button" text severity="info"
+											aria-label="Renvoyer l'invitation à l'utilisateur"
+											(click)="reSendInviteEmail(user)"/>
+					}
 					<p-button icon="pi pi-trash" class="action-button" text severity="danger"
-										[disabled]="user.uid === auth.currentUser!.uid"
+										[disabled]="user.uid === auth.currentUser!.uid || (user.status === UserStatusEnum.ACTIVATED && isUserRoleEqualOrHigher(role()!, user.role))"
 										aria-label="Supprimer l'utilisateur"
 										(click)="openDeleteUserDialog(user)"/>
 
@@ -93,5 +100,4 @@
 @if (selectedUser()) {
 	<app-edit-role-dialog [visible]="editRoleDialogVisible" (visibleChange)="editRoleDialogVisible = $event"
 												[user]="selectedUser()!" (confirm)="reloadData()"/>
-
 }

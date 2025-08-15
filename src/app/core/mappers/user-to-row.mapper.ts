@@ -37,6 +37,7 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 	const { email, role } = invite;
 
 	return {
+		uid: invite.uid,
 		displayName: "Invitation en attente",
 		email: email || "Aucun e-mail défini",
 		status: UserStatusEnum.INVITED,
