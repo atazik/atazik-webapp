@@ -4,6 +4,8 @@ import { AuthGuard, redirectUnauthorizedTo } from "@angular/fire/auth-guard";
 import { HomeComponent } from "./features/app/home/home.component";
 import { UserManagementComponent } from "./features/app/user-management/user-management.component";
 import { SignUpComponent } from "./features/sign-up/sign-up.component";
+import { roleGuard } from "./core/guards/role.guard";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(["/sign-in"]);
 
@@ -26,6 +28,8 @@ export const routes: Routes = [
 			{
 				path: "user-management",
 				component: UserManagementComponent,
+				canActivate: [roleGuard],
+				data: { role: UserRoleEnum.PRESIDENT },
 				title: "Atazik - Gestion des utilisateurs",
 			},
 		],
