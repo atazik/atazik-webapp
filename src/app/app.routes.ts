@@ -6,14 +6,16 @@ import { UserManagementComponent } from "./features/app/user-management/user-man
 import { SignUpComponent } from "./features/sign-up/sign-up.component";
 import { roleGuard } from "./core/guards/role.guard";
 import { UserRoleEnum } from "@shared/enums/user-roles.enum";
+import { statusGuard } from "./core/guards/status.guard";
+import { UserStatusEnum } from "@shared/enums/user-status.enum";
 
 const redirectUnauthorizedToSignIn = () => redirectUnauthorizedTo(["/sign-in"]);
 
 export const routes: Routes = [
 	{
 		path: "app",
-		canActivate: [AuthGuard],
-		data: { authGuardPipe: redirectUnauthorizedToSignIn },
+		canActivate: [AuthGuard, statusGuard],
+		data: { authGuardPipe: redirectUnauthorizedToSignIn, status: UserStatusEnum.ACTIVATED },
 		children: [
 			{
 				path: "",

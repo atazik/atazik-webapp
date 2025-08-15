@@ -4,10 +4,10 @@ import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
 import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 import { UserStatusEnum } from "@shared/enums/user-status.enum";
 import { FirestoreCollectionsEnum } from "@shared/enums/firebase/firestore-collections.enum";
-import { isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
-import { UserRoleEnum } from "@shared/enums/user-roles.enum";
+import { getUserRoleLabel, isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
@@ -192,7 +192,7 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 			subject: `Invitation à rejoindre ${appName.value()}`,
 			html: `
         <p>Bonjour,</p>
-        <p>Vous avez été invité à créer un compte sur ${appName.value()} avec le rôle "${role}".</p>
+        <p>Vous avez été invité à créer un compte sur ${appName.value()} avec le rôle ${getUserRoleLabel(role)}.</p>
         <p>Cliquez sur le lien ci-dessous pour finaliser la création de votre compte :</p>
         <p><a href="${link}">Finaliser l'inscription</a></p>
         <p>Ce lien expirera dans un certain temps. Ne le partagez pas.</p>
@@ -214,9 +214,63 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 	}
 });
 
+/**
+ * Cloud Function to edit a user's role.
+ * This function is callable via HTTPS and allows an authenticated user (an admin or president)
+ * to change the role of another user.
+ * It checks if the requester has the right permissions to change the role.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const editUserRole = functions.https.onCall(async (request, response) => {
+	if (!isAuthorized(request, UserRoleEnum.PRESIDENT)) {
+		throw new functions.https.HttpsError(
+			"unauthenticated",
+			"Seuls les utilisateurs authentifiés et administrateurs peuvent modifier le rôle d'un utilisateur.",
+		);
+	}
+
+	const { uid, role } = request.data;
+
+	if (!uid || !role) {
+		throw new functions.https.HttpsError("invalid-argument", "L'UID et le rôle sont requis.");
+	}
+
+	if (!Object.values(UserRoleEnum).includes(role)) {
+		throw new functions.https.HttpsError("invalid-argument", "Rôle invalide.");
+	}
+
+	// Check if the target user have a role below the requester
+	if (!isUserRoleEqualOrHigher(role, request.auth?.token.role)) {
+		throw new functions.https.HttpsError(
+			"permission-denied",
+			"Vous n'êtes pas autorisé à modifier le rôle de cet utilisateur.",
+		);
+	}
+
+	try {
+		// Set the custom claims for the user
+		await getAuth().setCustomUserClaims(uid, { role: role, status: UserStatusEnum.ACTIVATED });
+
+		// Update user auth version in Firestore
+		const docRef = admin.firestore().doc(`${FirestoreCollectionsEnum.ADMIN}/global`);
+		await docRef.update({ userAuthVersion: admin.firestore.FieldValue.increment(1) });
+
+		return { success: true, message: "Rôle de l'utilisateur modifié avec succès." };
+	} catch (error) {
+		console.error("Error updating user role:", error);
+		throw new functions.https.HttpsError("internal", "Erreur lors de la modification du rôle de l'utilisateur.");
+	}
+});
+
+/**
+ * Check if the user is authorized to perform an action based on their role.
+ * This function checks if the user is authenticated and if their role is equal to or higher than
+ * the required role.
+ * It also allows the owner of the application to bypass role checks.
+ */
 function isAuthorized(request: functions.https.CallableRequest, roleRequired: UserRoleEnum): boolean {
 	return (
-		(request.auth && request.auth.token && isUserRoleEqualOrHigher(request.auth.token.role, roleRequired)) ||
+		(request.auth && request.auth.token && isUserRoleEqualOrHigher(roleRequired, request.auth.token.role)) ||
 		request.auth?.token.email === ownerEmail.value()
 	);
 }

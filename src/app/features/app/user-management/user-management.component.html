@@ -46,7 +46,8 @@
 			<tr>
 				<td>
 					<div class="name-table-container">
-						<span class="display-name-text">{{ user.displayName }}</span>
+						<span
+							class="display-name-text">{{ user.displayName + (user.uid === auth.currentUser!.uid ? " (Vous)" : "") }}</span>
 						<span class="email-text">{{ user.email }}</span>
 					</div>
 				</td>
@@ -58,7 +59,19 @@
 					<p-chip [label]="user.roleChip.label" [icon]="user.roleChip.icon" [removable]="user.roleChip.removable"
 									class="role-chip {{ user.roleChip.class }}"/>
 				</td>
-				<td></td>
+				<td class="action-cell"
+						[pTooltip]="user.uid === auth.currentUser!.uid ? 'Vous ne pouvez pas modifier votre propre rôle ou supprimer votre compte.' : ''"
+						tooltipPosition="top">
+					<p-button icon="pi pi-pencil" class="action-button" text
+										[disabled]="user.uid === auth.currentUser!.uid"
+										aria-label="Modifier le rôle de l'utilisateur"
+										(click)="openEditRoleDialog(user)"/>
+					<p-button icon="pi pi-trash" class="action-button" text severity="danger"
+										[disabled]="user.uid === auth.currentUser!.uid"
+										aria-label="Supprimer l'utilisateur"
+										(click)="openDeleteUserDialog(user)"/>
+
+				</td>
 			</tr>
 		</ng-template>
 
@@ -72,3 +85,6 @@
 
 <app-invite-user-dialog [visible]="inviteDialogVisible" (visibleChange)="inviteDialogVisible = $event"
 												(confirm)="confirmInviteDialog()"/>
+
+<app-edit-role-dialog [visible]="editRoleDialogVisible" (visibleChange)="editRoleDialogVisible = $event"
+											[user]="selectedUser" (confirm)="reloadData()"/>

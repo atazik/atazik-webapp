@@ -13,4 +13,10 @@ export const enum CloudFunctionsEnum {
 	 * This function is triggered when a president or more visit the user management page.
 	 */
 	GET_ALL_USERS = "getAllUsers",
+
+	/**
+	 * Cloud function to edit user claim role in Firebase Auth.
+	 * This function is triggered when a president or more edit a user role.
+	 */
+	EDIT_USER_ROLE = "editUserRole",
 }

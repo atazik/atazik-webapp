@@ -1,10 +1,10 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { FormsModule } from "@angular/forms";
-import { AuthModule } from "@angular/fire/auth";
+import { Auth, AuthModule } from "@angular/fire/auth";
 import { PartialFirebaseUser } from "../../../core/models/firebase-user.model";
 import { Card } from "primeng/card";
 import { Toolbar } from "primeng/toolbar";
@@ -17,6 +17,8 @@ import { FirebaseUserRow } from "../../../core/models/tables-row/firebase-user-r
 import { Chip } from "primeng/chip";
 import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dialog.component";
 import { UserInvite } from "@shared/models/user-invite.model";
+import { Tooltip } from "primeng/tooltip";
+import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.component";
 
 @Component({
 	selector: "app-user-management",
@@ -34,12 +36,16 @@ import { UserInvite } from "@shared/models/user-invite.model";
 		Ripple,
 		Chip,
 		InviteUserDialogComponent,
+		AuthModule,
+		Tooltip,
+		EditRoleDialogComponent,
 	],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
 })
 export class UserManagementComponent implements OnInit {
 	private userService = inject(UserService);
+	protected auth = inject(Auth);
 
 	private usersFirebase: PartialFirebaseUser[] = [];
 	private usersInvites: UserInvite[] = [];
@@ -47,6 +53,10 @@ export class UserManagementComponent implements OnInit {
 	protected loading = false;
 
 	protected inviteDialogVisible = false;
+	protected editRoleDialogVisible = false;
+	protected deleteUserDialogVisible = false;
+
+	selectedUser = signal<FirebaseUserRow | null>(null);
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -101,5 +111,15 @@ export class UserManagementComponent implements OnInit {
 	 */
 	confirmInviteDialog() {
 		this.fetchUsers();
+	}
+
+	openEditRoleDialog(user: FirebaseUserRow) {
+		this.selectedUser.set(user);
+		this.editRoleDialogVisible = true;
+	}
+
+	openDeleteUserDialog(user: FirebaseUserRow) {
+		this.selectedUser.set(user);
+		this.deleteUserDialogVisible = true;
 	}
 }

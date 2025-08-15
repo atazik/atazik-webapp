@@ -6,9 +6,10 @@ import { SelectModule } from "primeng/select";
 import { UserService } from "../../../../core/services/user.service";
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Message } from "primeng/message";
-import { listUserRolesWithLabel } from "@shared/utils/user-role.utils";
+import { listBelowUserRoles, listUserRolesWithLabel } from "@shared/utils/user-role.utils";
 import { AuthModule } from "@angular/fire/auth";
-import { RoleService } from "../../../../core/services/role.service";
+import { ClaimService } from "../../../../core/services/claim.service";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 @Component({
 	selector: "app-invite-user-dialog",
@@ -19,7 +20,7 @@ import { RoleService } from "../../../../core/services/role.service";
 export class InviteUserDialogComponent {
 	private userService = inject(UserService);
 	private formBuilder = inject(FormBuilder);
-	private roleService = inject(RoleService);
+	private roleService = inject(ClaimService);
 
 	@Input() visible = false;
 	@Output() visibleChange = new EventEmitter<boolean>();
@@ -34,7 +35,9 @@ export class InviteUserDialogComponent {
 		role: ["", { validators: [Validators.required] }],
 	});
 
-	protected readonly roles = listUserRolesWithLabel();
+	protected readonly roles = listUserRolesWithLabel(
+		this.role() === UserRoleEnum.ADMIN ? undefined : listBelowUserRoles(this.role()),
+	);
 
 	protected async onSubmit() {
 		if (this.formInviteUser.invalid) {
