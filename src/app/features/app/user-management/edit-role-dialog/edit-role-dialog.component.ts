@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from "@angular/core";
+import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
 import { Dialog } from "primeng/dialog";
 import { FirebaseUserRow } from "../../../../core/models/tables-row/firebase-user-row.model";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -15,13 +15,13 @@ import { MessageModule } from "primeng/message";
 	templateUrl: "./edit-role-dialog.component.html",
 	styleUrl: "./edit-role-dialog.component.scss",
 })
-export class EditRoleDialogComponent implements OnInit {
+export class EditRoleDialogComponent {
 	private formBuilder = inject(FormBuilder);
 	private claimService = inject(ClaimService);
 	protected role = this.claimService.role;
 
 	@Input({ required: true }) visible = false;
-	@Input({ required: true }) user = signal<FirebaseUserRow | null>(null);
+	@Input({ required: true }) user!: FirebaseUserRow;
 	@Output() visibleChange = new EventEmitter<boolean>();
 	@Output() confirm = new EventEmitter<void>();
 
@@ -30,20 +30,18 @@ export class EditRoleDialogComponent implements OnInit {
 
 	protected readonly formEditRole = this.formBuilder.group({
 		role: ["", { validators: [Validators.required] }],
-		uid: [""],
 	});
 
-	protected readonly roles = listUserRolesWithLabel(
-		this.role() === UserRoleEnum.ADMIN ? undefined : listBelowUserRoles(this.role()),
-	);
+	protected roles: { label: string; value: string; disabled: boolean }[] = [];
 
-	ngOnInit(): void {
-		if (this.user()) {
-			this.formEditRole.patchValue({
-				role: this.role(),
-				uid: this.user()?.uid,
-			});
-		}
+	protected onShow() {
+		this.roles = listUserRolesWithLabel(
+			this.role() === UserRoleEnum.ADMIN ? undefined : listBelowUserRoles(this.role()),
+		).map((role) => ({
+			label: this.user.role === role.value ? role.label + " (actuel)" : role.label,
+			value: role.value,
+			disabled: this.user.role === role.value,
+		}));
 	}
 
 	protected onSubmit() {
@@ -57,7 +55,7 @@ export class EditRoleDialogComponent implements OnInit {
 		try {
 			this.loading = true;
 			this.claimService
-				.editUserRole(this.user()!.uid!, role)
+				.editUserRole(this.user.uid!, role)
 				.then(() => {
 					this.confirm.emit();
 					this.onClose();
@@ -77,7 +75,6 @@ export class EditRoleDialogComponent implements OnInit {
 	}
 
 	onClose() {
-		this.user.set(null);
 		this.formEditRole.reset();
 		this.error = "";
 		this.loading = false;

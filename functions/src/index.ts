@@ -4,10 +4,10 @@ import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
 import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
-import { UserRoleEnum } from "@shared/enums/user-roles.enum";
-import { UserStatusEnum } from "@shared/enums/user-status.enum";
-import { FirestoreCollectionsEnum } from "@shared/enums/firebase/firestore-collections.enum";
-import { getUserRoleLabel, isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
+import { UserRoleEnum } from "./shared/enums/user-roles.enum";
+import { UserStatusEnum } from "./shared/enums/user-status.enum";
+import { FirestoreCollectionsEnum } from "./shared/enums/firebase/firestore-collections.enum";
+import { getUserRoleLabel, isUserRoleEqualOrHigher } from "./shared/utils/user-role.utils";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
@@ -239,11 +239,17 @@ export const editUserRole = functions.https.onCall(async (request, response) => 
 		throw new functions.https.HttpsError("invalid-argument", "Rôle invalide.");
 	}
 
-	// Check if the target user have a role below the requester
-	if (!isUserRoleEqualOrHigher(role, request.auth?.token.role)) {
+	const user = await getAuth()
+		.getUser(uid)
+		.catch((error) => {
+			console.error("Error fetching user:", error);
+			throw new functions.https.HttpsError("not-found", "Utilisateur non trouvé.");
+		});
+
+	if (isUserRoleEqualOrHigher(role, user.customClaims!["role"])) {
 		throw new functions.https.HttpsError(
-			"permission-denied",
-			"Vous n'êtes pas autorisé à modifier le rôle de cet utilisateur.",
+			"failed-precondition",
+			"Vous ne pouvez pas rétrograder un utilisateur à un rôle égal ou supérieur au vôtre.",
 		);
 	}
 

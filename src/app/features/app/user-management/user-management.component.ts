@@ -19,6 +19,8 @@ import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dial
 import { UserInvite } from "@shared/models/user-invite.model";
 import { Tooltip } from "primeng/tooltip";
 import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.component";
+import { ConfirmDialog } from "primeng/confirmdialog";
+import { ConfirmationService } from "primeng/api";
 
 @Component({
 	selector: "app-user-management",
@@ -39,7 +41,9 @@ import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.com
 		AuthModule,
 		Tooltip,
 		EditRoleDialogComponent,
+		ConfirmDialog,
 	],
+	providers: [ConfirmationService],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
 })
@@ -56,7 +60,7 @@ export class UserManagementComponent implements OnInit {
 	protected editRoleDialogVisible = false;
 	protected deleteUserDialogVisible = false;
 
-	selectedUser = signal<FirebaseUserRow | null>(null);
+	protected selectedUser = signal<FirebaseUserRow | null>(null);
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -68,6 +72,7 @@ export class UserManagementComponent implements OnInit {
 	async fetchUsers() {
 		this.loading = true;
 
+		// Get users from Firebase auth
 		await this.userService
 			.fetchUsers()
 			.then((users) => {
@@ -102,23 +107,23 @@ export class UserManagementComponent implements OnInit {
 	/**
 	 * Opens the invite dialog.
 	 */
-	openInviteDialog() {
+	protected openInviteDialog() {
 		this.inviteDialogVisible = true;
 	}
 
 	/**
 	 * Closes the invite dialog.
 	 */
-	confirmInviteDialog() {
+	protected confirmInviteDialog() {
 		this.fetchUsers();
 	}
 
-	openEditRoleDialog(user: FirebaseUserRow) {
+	protected openEditRoleDialog(user: FirebaseUserRow) {
 		this.selectedUser.set(user);
 		this.editRoleDialogVisible = true;
 	}
 
-	openDeleteUserDialog(user: FirebaseUserRow) {
+	protected openDeleteUserDialog(user: FirebaseUserRow) {
 		this.selectedUser.set(user);
 		this.deleteUserDialogVisible = true;
 	}
