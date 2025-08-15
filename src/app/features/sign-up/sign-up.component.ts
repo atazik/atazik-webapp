@@ -5,7 +5,7 @@ import {
 	isSignInWithEmailLink,
 	signInWithEmailLink,
 	updatePassword,
-	updateProfile
+	updateProfile,
 } from "@angular/fire/auth";
 import { CardModule } from "primeng/card";
 import { DividerModule } from "primeng/divider";
@@ -20,10 +20,10 @@ import { Router } from "@angular/router";
 import { Ripple } from "primeng/ripple";
 import { InputText } from "primeng/inputtext";
 import { doc, Firestore, FirestoreModule, getDoc } from "@angular/fire/firestore";
-import { UserInvite } from "../../core/models/user-invite.model";
 import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
-import { getUserRoleLabel } from "../../core/enums/user-roles.enum";
+import { getUserRoleLabel } from "@shared/utils/user-role.utils";
+import { UserInvite } from "@shared/models/user-invite.model";
 
 @Component({
 	selector: "app-sign-up",

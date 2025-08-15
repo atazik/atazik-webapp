@@ -1,11 +1,13 @@
 import { PartialFirebaseUser } from "../models/firebase-user.model";
 import { FirebaseUserRow } from "../models/tables-row/firebase-user-row.model";
-import { UserInvite } from "../models/user-invite.model";
-import { getUserRoleLabel } from "../enums/user-roles.enum";
+import { getUserRoleLabel } from "@shared/utils/user-role.utils";
+import { UserInvite } from "@shared/models/user-invite.model";
+import { UserStatusEnum } from "@shared/enums/user-status.enum";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow {
 	const { email, displayName, emailVerified, customClaims } = user;
-	const statusActivated = emailVerified && customClaims?.["status"] === "activated";
+	const statusActivated = emailVerified && customClaims?.["status"] === UserStatusEnum.ACTIVATED;
 
 	return {
 		displayName: displayName || "Aucun nom défini",
@@ -17,8 +19,8 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 		},
 		roleChip: {
 			label: getUserRoleLabel(customClaims!["role"]),
-			icon: customClaims?.["role"] === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: customClaims?.["role"] === "admin" ? "bg-red text-white" : "bg-gray text-white",
+			icon: customClaims?.["role"] === UserRoleEnum.ADMIN ? "pi pi-shield" : "pi pi-user",
+			class: customClaims?.["role"] === UserRoleEnum.ADMIN ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -40,8 +42,8 @@ export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 		},
 		roleChip: {
 			label: getUserRoleLabel(role),
-			icon: role === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: role === "admin" ? "bg-red text-white" : "bg-gray text-white",
+			icon: role === UserRoleEnum.ADMIN ? "pi pi-shield" : "pi pi-user",
+			class: role === UserRoleEnum.ADMIN ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -55,9 +57,9 @@ function getStatusLabel(status?: string, emailVerified?: boolean): string {
 		return "Inconnu";
 	}
 
-	if (status === "activated") {
+	if (status === UserStatusEnum.ACTIVATED) {
 		return emailVerified ? "Activé" : "E-mail non vérifié";
-	} else if (status === "invited") {
+	} else if (status === UserStatusEnum.INVITED) {
 		return "Invité";
 	} else {
 		return "Inconnu";

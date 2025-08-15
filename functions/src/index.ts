@@ -4,6 +4,10 @@ import { ActionCodeSettings, getAuth, UserRecord } from "firebase-admin/auth";
 import { defineSecret, defineString } from "firebase-functions/params";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import { UserStatusEnum } from "@shared/enums/user-status.enum";
+import { FirestoreCollectionsEnum } from "@shared/enums/firebase/firestore-collections.enum";
+import { isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 admin.initializeApp();
 functions.setGlobalOptions({ maxInstances: 10, region: "europe-west9" });
@@ -15,6 +19,7 @@ const emailHost = defineString("EMAIL_HOST");
 const emailPort = defineString("EMAIL_PORT");
 const emailPass = defineSecret("EMAIL_PASS");
 const appName = defineString("APP_NAME");
+const ownerEmail = defineString("OWNER_EMAIL");
 
 // Configuration for nodemailer
 const transporter = (pass: string) =>
@@ -49,8 +54,17 @@ async function listAllUsers(nextPageToken?: string) {
  * Cloud Function to get all users from Firebase Authentication.
  * This function is callable via HTTPS and returns a list of user records.
  * Each user record includes basic information such as uid, email, displayName, etc.
+ * Minimum role required to call this function is PRESIDENT.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getAllUsers = functions.https.onCall(async (request, response) => {
+	if (!isAuthorized(request, UserRoleEnum.PRESIDENT)) {
+		throw new functions.https.HttpsError(
+			"unauthenticated",
+			"Seuls les utilisateurs authentifiés et administrateurs peuvent accéder à cette fonction.",
+		);
+	}
+
 	const userRecords = await listAllUsers();
 	return userRecords.map((u) => {
 		return {
@@ -83,7 +97,7 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated(async (
 		throw new functions.https.HttpsError("invalid-argument", "L'e-mail de l'utilisateur est requis.");
 	}
 
-	const pendingInvitesCollection = admin.firestore().collection("pendingInvites");
+	const pendingInvitesCollection = admin.firestore().collection(FirestoreCollectionsEnum.PENDING_INVITES);
 	const pendingInviteDoc = await pendingInvitesCollection.where("email", "==", email).limit(1).get();
 
 	if (pendingInviteDoc.empty) {
@@ -111,10 +125,10 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated(async (
 		user.customClaims = {};
 	}
 	user.customClaims.role = pendingInviteDoc.docs[0].data()!["role"];
-	user.customClaims.status = "activated";
+	user.customClaims.status = UserStatusEnum.ACTIVATED;
 
 	// Update user auth version in Firestore
-	const docRef = admin.firestore().doc("admin/global");
+	const docRef = admin.firestore().doc(`${FirestoreCollectionsEnum.ADMIN}/global`);
 	docRef.update({ userAuthVersion: admin.firestore.FieldValue.increment(1) }).catch((error) => {
 		console.error("Error updating user auth version:", error);
 	});
@@ -126,15 +140,13 @@ export const beforeCreateAuthUser = functions.identity.beforeUserCreated(async (
 
 /**
  * Cloud Function to invite a user by email.
- * This function is callable via HTTPS and allows an authenticated user (an admin)
+ * This function is callable via HTTPS and allows an authenticated user (an admin or president)
  * to invite another user by sending an email with a sign-in link.
  * The invited user can then create an account.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }, async (request, response) => {
-	if (
-		(!request.auth || !request.auth.token.role || !["admin", "president"].includes(request.auth.token.role)) &&
-		request.auth?.token.email !== "sacha.barbet@proton.me"
-	) {
+	if (!isAuthorized(request, UserRoleEnum.PRESIDENT)) {
 		throw new functions.https.HttpsError(
 			"unauthenticated",
 			"Seuls les utilisateurs authentifiés et administrateurs peuvent inviter.",
@@ -150,18 +162,17 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 	role = role.toLowerCase().trim();
 
 	const token = uuidv4();
-	const collectionName = "pendingInvites";
 
 	try {
 		// Save the pending invite in Firestore
 		await admin
 			.firestore()
-			.collection(collectionName)
+			.collection(FirestoreCollectionsEnum.PENDING_INVITES)
 			.doc(token)
 			.set({
 				email: email,
 				role: role,
-				status: "invited",
+				status: UserStatusEnum.INVITED,
 				createdAt: admin.firestore.FieldValue.serverTimestamp(),
 				expiresAt: Date.now() + 24 * 60 * 60 * 1000, // expire dans 1 jour
 			});
@@ -192,7 +203,6 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 
 		return { success: true, message: "Invitation envoyée avec succès." };
 	} catch (error) {
-		console.error("Erreur lors de l'invitation de l'utilisateur:", error);
 		if (error instanceof functions.https.HttpsError) {
 			throw error; // Re-jeter l'erreur HttpsError
 		}
@@ -203,3 +213,10 @@ export const inviteUserByEmail = functions.https.onCall({ secrets: [emailPass] }
 		);
 	}
 });
+
+function isAuthorized(request: functions.https.CallableRequest, roleRequired: UserRoleEnum): boolean {
+	return (
+		(request.auth && request.auth.token && isUserRoleEqualOrHigher(request.auth.token.role, roleRequired)) ||
+		request.auth?.token.email === ownerEmail.value()
+	);
+}

@@ -15,8 +15,8 @@ import { Ripple } from "primeng/ripple";
 import { mapFirebaseUsersToRows, mapUserInvitesToRows } from "../../../core/mappers/user-to-row.mapper";
 import { FirebaseUserRow } from "../../../core/models/tables-row/firebase-user-row.model";
 import { Chip } from "primeng/chip";
-import { UserInvite } from "../../../core/models/user-invite.model";
 import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dialog.component";
+import { UserInvite } from "@shared/models/user-invite.model";
 
 @Component({
 	selector: "app-user-management",
@@ -82,6 +82,11 @@ export class UserManagementComponent implements OnInit {
 		this.userRows = mapFirebaseUsersToRows(this.usersFirebase);
 		this.userRows.push(...mapUserInvitesToRows(this.usersInvites));
 		this.loading = false;
+	}
+
+	protected async reloadData() {
+		this.userService.invalidateUsersCache();
+		await this.fetchUsers();
 	}
 
 	/**
