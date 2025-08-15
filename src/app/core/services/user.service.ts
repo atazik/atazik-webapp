@@ -90,6 +90,13 @@ export class UserService {
 		return result;
 	}
 
+	public invalidateUsersCache(): void {
+		// Clear the local storage cache for user authentication version
+		localStorage.removeItem(this.userAuthVersionStorageKey);
+		// Clear the secure storage cache for users
+		this.secureStorageService.removeItem(this.firebaseUsersStorageKey);
+	}
+
 	/**
 	 * Retrieves the user authentication version index from Firestore.
 	 */
