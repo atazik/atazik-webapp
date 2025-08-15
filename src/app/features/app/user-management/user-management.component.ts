@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
@@ -17,6 +17,8 @@ import { FirebaseUserRow } from "../../../core/models/tables-row/firebase-user-r
 import { Chip } from "primeng/chip";
 import { InviteUserDialogComponent } from "./invite-user-dialog/invite-user-dialog.component";
 import { UserInvite } from "@shared/models/user-invite.model";
+import { Tooltip } from "primeng/tooltip";
+import { EditRoleDialogComponent } from "./edit-role-dialog/edit-role-dialog.component";
 
 @Component({
 	selector: "app-user-management",
@@ -35,6 +37,8 @@ import { UserInvite } from "@shared/models/user-invite.model";
 		Chip,
 		InviteUserDialogComponent,
 		AuthModule,
+		Tooltip,
+		EditRoleDialogComponent,
 	],
 	templateUrl: "./user-management.component.html",
 	styleUrl: "./user-management.component.scss",
@@ -51,6 +55,8 @@ export class UserManagementComponent implements OnInit {
 	protected inviteDialogVisible = false;
 	protected editRoleDialogVisible = false;
 	protected deleteUserDialogVisible = false;
+
+	selectedUser = signal<FirebaseUserRow | null>(null);
 
 	ngOnInit(): void {
 		this.fetchUsers();
@@ -107,7 +113,13 @@ export class UserManagementComponent implements OnInit {
 		this.fetchUsers();
 	}
 
-	openEditRoleDialog() {
+	openEditRoleDialog(user: FirebaseUserRow) {
+		this.selectedUser.set(user);
 		this.editRoleDialogVisible = true;
+	}
+
+	openDeleteUserDialog(user: FirebaseUserRow) {
+		this.selectedUser.set(user);
+		this.deleteUserDialogVisible = true;
 	}
 }

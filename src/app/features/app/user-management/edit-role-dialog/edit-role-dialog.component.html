@@ -1,0 +1,25 @@
+<p-dialog (onHide)="onClose()" header="Changement de rôle" [modal]="true" [(visible)]="visible"
+					class="dialog-width">
+	<p class="text-secondary">
+		<i class="pi pi-info-circle"></i>
+		Le rôle détermine les permissions et l'accès aux fonctionnalités de l'application.
+		Vous modifier le rôle de l'utilisateur <strong>{{ user()?.displayName }}</strong> ({{ user()?.email }}).
+	</p>
+
+	<form [formGroup]="formEditRole" (ngSubmit)="onSubmit()">
+		<div class="flex items-center gap-4 mb-8">
+			<label for="role" class="font-semibold w-24">Rôle</label>
+			<p-select inputId="role" placeholder="Choisir un rôle" formControlName="role" [options]="roles"
+								optionLabel="label" class="flex-auto" optionValue="value" required appendTo="body"/>
+		</div>
+		<div class="flex justify-end items-center gap-2">
+			@if (error) {
+				<p-message severity="error" closable>{{ error }}</p-message>
+			}
+			<p-button icon="pi pi-times" label="Annuler" severity="secondary" (click)="onClose()"/>
+			<p-button icon="pi pi-check" type="submit" label="Modifier le rôle"
+								[disabled]="formEditRole.invalid || formEditRole.pristine"
+								[loading]="loading"/>
+		</div>
+	</form>
+</p-dialog>

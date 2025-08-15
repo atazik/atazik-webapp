@@ -59,7 +59,9 @@
 					<p-chip [label]="user.roleChip.label" [icon]="user.roleChip.icon" [removable]="user.roleChip.removable"
 									class="role-chip {{ user.roleChip.class }}"/>
 				</td>
-				<td class="action-cell">
+				<td class="action-cell"
+						[pTooltip]="user.uid === auth.currentUser!.uid ? 'Vous ne pouvez pas modifier votre propre rôle ou supprimer votre compte.' : ''"
+						tooltipPosition="top">
 					<p-button icon="pi pi-pencil" class="action-button" text
 										[disabled]="user.uid === auth.currentUser!.uid"
 										aria-label="Modifier le rôle de l'utilisateur"
@@ -83,3 +85,6 @@
 
 <app-invite-user-dialog [visible]="inviteDialogVisible" (visibleChange)="inviteDialogVisible = $event"
 												(confirm)="confirmInviteDialog()"/>
+
+<app-edit-role-dialog [visible]="editRoleDialogVisible" (visibleChange)="editRoleDialogVisible = $event"
+											[user]="selectedUser" (confirm)="reloadData()"/>
