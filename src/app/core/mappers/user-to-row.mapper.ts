@@ -1,10 +1,13 @@
 import { PartialFirebaseUser } from "../models/firebase-user.model";
 import { FirebaseUserRow } from "../models/tables-row/firebase-user-row.model";
-import { UserInvite } from "../models/user-invite.model";
+import { getUserRoleLabel } from "@shared/utils/user-role.utils";
+import { UserInvite } from "@shared/models/user-invite.model";
+import { UserStatusEnum } from "@shared/enums/user-status.enum";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
 
 export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow {
 	const { email, displayName, emailVerified, customClaims } = user;
-	const statusActivated = emailVerified && customClaims?.["status"] === "activated";
+	const statusActivated = emailVerified && customClaims?.["status"] === UserStatusEnum.ACTIVATED;
 
 	return {
 		displayName: displayName || "Aucun nom défini",
@@ -12,16 +15,12 @@ export function mapFirebaseUserToRow(user: PartialFirebaseUser): FirebaseUserRow
 		statusChip: {
 			label: getStatusLabel(customClaims?.["status"], emailVerified),
 			icon: statusActivated ? "pi pi-check" : "pi pi-times",
-			class: statusActivated
-				? "bg-green-500 text-white"
-				: !emailVerified
-					? "bg-yellow-500 text-white"
-					: "bg-gray-500 text-white",
+			class: statusActivated ? "bg-green text-white" : !emailVerified ? "bg-yellow text-white" : "bg-gray text-white",
 		},
 		roleChip: {
-			label: getRoleLabel(customClaims?.["role"]),
-			icon: customClaims?.["role"] === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: customClaims?.["role"] === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+			label: getUserRoleLabel(customClaims!["role"]),
+			icon: customClaims?.["role"] === UserRoleEnum.ADMIN ? "pi pi-shield" : "pi pi-user",
+			class: customClaims?.["role"] === UserRoleEnum.ADMIN ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -32,18 +31,19 @@ export function mapFirebaseUsersToRows(user: PartialFirebaseUser[]): FirebaseUse
 
 export function mapUserInviteToRow(invite: UserInvite): FirebaseUserRow {
 	const { email, role } = invite;
+
 	return {
 		displayName: "Invitation en attente",
 		email: email || "Aucun e-mail défini",
 		statusChip: {
 			label: "Invité",
 			icon: "pi pi-clock",
-			class: "bg-blue-500 text-white",
+			class: "bg-blue text-white",
 		},
 		roleChip: {
-			label: getRoleLabel(role),
-			icon: role === "admin" ? "pi pi-shield" : "pi pi-user",
-			class: role === "admin" ? "bg-red-500 text-white" : "bg-gray-500 text-white",
+			label: getUserRoleLabel(role),
+			icon: role === UserRoleEnum.ADMIN ? "pi pi-shield" : "pi pi-user",
+			class: role === UserRoleEnum.ADMIN ? "bg-red text-white" : "bg-gray text-white",
 		},
 	};
 }
@@ -57,26 +57,11 @@ function getStatusLabel(status?: string, emailVerified?: boolean): string {
 		return "Inconnu";
 	}
 
-	if (status === "activated") {
+	if (status === UserStatusEnum.ACTIVATED) {
 		return emailVerified ? "Activé" : "E-mail non vérifié";
-	} else if (status === "invited") {
+	} else if (status === UserStatusEnum.INVITED) {
 		return "Invité";
 	} else {
 		return "Inconnu";
-	}
-}
-
-function getRoleLabel(role?: string): string {
-	if (!role) {
-		return "Inconnu";
-	}
-
-	switch (role) {
-		case "admin":
-			return "Administrateur";
-		case "user":
-			return "Utilisateur";
-		default:
-			return "Inconnu";
 	}
 }

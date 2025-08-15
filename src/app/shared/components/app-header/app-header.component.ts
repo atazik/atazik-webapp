@@ -1,10 +1,13 @@
-import { Component, inject } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { Auth, AuthModule } from "@angular/fire/auth";
 import { Router, RouterModule } from "@angular/router";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { ToastModule } from "primeng/toast";
 import { ConfirmDialog } from "primeng/confirmdialog";
 import { ButtonModule } from "primeng/button";
+import { isUserRoleEqualOrHigher } from "@shared/utils/user-role.utils";
+import { UserRoleEnum } from "@shared/enums/user-roles.enum";
+import { RoleService } from "../../../core/services/role.service";
 
 @Component({
 	selector: "app-header",
@@ -14,10 +17,15 @@ import { ButtonModule } from "primeng/button";
 	styleUrl: "./app-header.component.scss",
 })
 export class AppHeaderComponent {
+	private roleService = inject(RoleService);
 	protected auth = inject(Auth);
-	protected confirmationService = inject(ConfirmationService);
-	protected messageService = inject(MessageService);
 	private router = inject(Router);
+	private confirmationService = inject(ConfirmationService);
+	private messageService = inject(MessageService);
+	private role = this.roleService.role;
+	protected isPresidentOrHigher = computed(() => {
+		return isUserRoleEqualOrHigher(UserRoleEnum.PRESIDENT, this.role());
+	});
 
 	protected isSignUpUrl = this.router.url.includes("finish-signup");
 

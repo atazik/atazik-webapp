@@ -3,24 +3,28 @@ import { DialogModule } from "primeng/dialog";
 import { ButtonModule } from "primeng/button";
 import { InputText } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
-import { UserService } from "../../../core/services/user.service";
+import { UserService } from "../../../../core/services/user.service";
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Message } from "primeng/message";
+import { listUserRolesWithLabel } from "@shared/utils/user-role.utils";
+import { AuthModule } from "@angular/fire/auth";
+import { RoleService } from "../../../../core/services/role.service";
 
 @Component({
 	selector: "app-invite-user-dialog",
-	imports: [DialogModule, ButtonModule, InputText, SelectModule, FormsModule, ReactiveFormsModule, Message],
+	imports: [DialogModule, ButtonModule, InputText, SelectModule, FormsModule, ReactiveFormsModule, Message, AuthModule],
 	templateUrl: "./invite-user-dialog.component.html",
 	styleUrl: "./invite-user-dialog.component.scss",
 })
 export class InviteUserDialogComponent {
 	private userService = inject(UserService);
 	private formBuilder = inject(FormBuilder);
+	private roleService = inject(RoleService);
 
 	@Input() visible = false;
 	@Output() visibleChange = new EventEmitter<boolean>();
-
 	@Output() confirm = new EventEmitter<void>();
+	protected role = this.roleService.role;
 
 	protected loading = false;
 	protected error = "";
@@ -30,12 +34,9 @@ export class InviteUserDialogComponent {
 		role: ["", { validators: [Validators.required] }],
 	});
 
-	protected readonly roles = [
-		{ label: "Utilisateur", value: "user" },
-		{ label: "Administrateur", value: "admin" },
-	];
+	protected readonly roles = listUserRolesWithLabel();
 
-	async onSubmit() {
+	protected async onSubmit() {
 		if (this.formInviteUser.invalid) {
 			this.formInviteUser.markAllAsTouched();
 			return;
